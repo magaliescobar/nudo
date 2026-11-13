@@ -4,16 +4,28 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./env": "./src/env.ts"
+    "./env": "./src/env.ts",
+    "./repositories": "./src/repositories.ts",
+    "./mongo/client": "./src/mongo/client.ts",
+    "./mongo/collections": "./src/mongo/collections.ts",
+    "./mongo/indexes": "./src/mongo/indexes.ts",
+    "./repositories/*": "./src/repositories/*.ts",
+    "./redis": "./src/redis.ts",
+    "./redis/*": "./src/redis/*.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@nudo/commerce": "workspace:*",
+    "@nudo/i18n": "workspace:*",
+    "mongodb": "^6.22.0",
+    "redis": "6.3.1",
     "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@nudo/config": "workspace:*",
-    "@types/node": "^20"
+    "@types/node": "^20",
+    "tsx": "^4.23.15"
   }
 }

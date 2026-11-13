@@ -5,7 +5,8 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    "./money": "./src/money.ts"
+    "./money": "./src/money.ts",
+    "./catalog": "./src/catalog.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
@@ -13,5 +14,8 @@
   "devDependencies": {
     "@nudo/config": "workspace:*",
     "@types/node": "^20"
+  },
+  "dependencies": {
+    "@nudo/i18n": "workspace:*"
   }
 }

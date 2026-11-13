@@ -27,6 +27,7 @@
     "@types/node": "^20.19.43",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "mongodb": "^6.22.0",
     "prettier": "^3.10.1",
     "sass": "1.108.2",
     "stylelint": "^18.0.0",
