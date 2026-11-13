@@ -14,24 +14,24 @@ El proyecto nació como una app de `create-next-app` en la raíz del repo (`app/
 
 La migración se hace en commits aislados con `git mv` para conservar el historial.
 
-| Origen (raíz)                | Destino                           | Nota                                                                    |
-| ---------------------------- | --------------------------------- | ----------------------------------------------------------------------- |
-| `app/`                       | `apps/web/app/`                   | Rutas del App Router                                                     |
-| `public/`                    | `apps/web/public/`                | Assets estáticos                                                         |
-| `cache-handlers/`            | `apps/web/cache-handlers/`        | Handler actual; en Fase 2 se reemplaza por el de `packages/data` (R20)  |
-| `next.config.ts`             | `apps/web/next.config.ts`         | Se agrega `turbopack.root`, `transpilePackages`, `sassOptions`          |
-| `tsconfig.json`              | `apps/web/tsconfig.json`          | Extiende la base de `@nudo/config`                                      |
-| `package.json`               | `apps/web/package.json`           | Se renombra a `@nudo/web`; en la raíz queda un `package.json` nuevo     |
-| `eslint.config.mjs`          | queda en la raíz                  | Config única para todo el monorepo (fronteras R01)                      |
-| `pnpm-workspace.yaml`        | queda en la raíz                  | Se agregan `apps/*` y `packages/*`                                      |
-| `.env.local`                 | **queda en la raíz** (no se toca) | Ver punto 4                                                              |
-| `docs/`, `learning/`, `*.md` | quedan en la raíz                 | Documentación del repo                                                   |
+| Origen (raíz)                | Destino                           | Nota                                                                   |
+| ---------------------------- | --------------------------------- | ---------------------------------------------------------------------- |
+| `app/`                       | `apps/web/app/`                   | Rutas del App Router                                                   |
+| `public/`                    | `apps/web/public/`                | Assets estáticos                                                       |
+| `cache-handlers/`            | `apps/web/cache-handlers/`        | Handler actual; en Fase 2 se reemplaza por el de `packages/data` (R20) |
+| `next.config.ts`             | `apps/web/next.config.ts`         | Se agrega `turbopack.root`, `transpilePackages`, `sassOptions`         |
+| `tsconfig.json`              | `apps/web/tsconfig.json`          | Extiende la base de `@nudo/config`                                     |
+| `package.json`               | `apps/web/package.json`           | Se renombra a `@nudo/web`; en la raíz queda un `package.json` nuevo    |
+| `eslint.config.mjs`          | queda en la raíz                  | Config única para todo el monorepo (fronteras R01)                     |
+| `pnpm-workspace.yaml`        | queda en la raíz                  | Se agregan `apps/*` y `packages/*`                                     |
+| `.env.local`                 | **queda en la raíz** (no se toca) | Ver punto 4                                                            |
+| `docs/`, `learning/`, `*.md` | quedan en la raíz                 | Documentación del repo                                                 |
 
 Paquetes nuevos en `packages/` (todos ESM, `"type": "module"`, scope `@nudo/*`):
 
 | Paquete          | Responsabilidad                                                            | Puede importar                            |
 | ---------------- | -------------------------------------------------------------------------- | ----------------------------------------- |
-| `@nudo/config`   | Bases de `tsconfig`                                                         | —                                         |
+| `@nudo/config`   | Bases de `tsconfig`                                                        | —                                         |
 | `@nudo/tokens`   | Fuente única de tokens → CSS custom properties + API Sass                  | —                                         |
 | `@nudo/i18n`     | Config de locales, diccionarios tipados, helpers `Intl`                    | —                                         |
 | `@nudo/commerce` | Dominio puro: tipos, reglas de precio/stock, casos de uso (sin React/Next) | `i18n`                                    |

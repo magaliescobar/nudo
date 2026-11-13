@@ -9,6 +9,9 @@ const rootEnvFile = path.join(workspaceRoot, ".env.local");
 if (existsSync(rootEnvFile)) process.loadEnvFile(rootEnvFile);
 
 const nextConfig: NextConfig = {
+  // Permite builds aislados (p. ej. la sonda R01 de tests/api) sin pisar `.next`.
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
+
   cacheComponents: true,
   partialPrefetching: true,
 
@@ -17,13 +20,7 @@ const nextConfig: NextConfig = {
   },
 
   // Paquetes internos que se publican como TypeScript/SCSS fuente (ADR 003 §2).
-  transpilePackages: [
-    "@nudo/commerce",
-    "@nudo/data",
-    "@nudo/i18n",
-    "@nudo/tokens",
-    "@nudo/ui",
-  ],
+  transpilePackages: ["@nudo/commerce", "@nudo/data", "@nudo/i18n", "@nudo/tokens", "@nudo/ui"],
 
   // Permite `@use 'tokens';` desde apps/web y packages/ui sin imports `~` (ADR 003 §3).
   sassOptions: {

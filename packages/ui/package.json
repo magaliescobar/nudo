@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "sideEffects": ["**/*.scss", "**/*.css"],
+  "sideEffects": [
+    "**/*.scss",
+    "**/*.css"
+  ],
   "exports": {
     "./atoms/*": "./src/atoms/*/*.tsx",
     "./molecules/*": "./src/molecules/*/*.tsx",

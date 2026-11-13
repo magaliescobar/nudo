@@ -10,11 +10,26 @@
     "build": "pnpm --filter @nudo/web build",
     "start": "pnpm --filter @nudo/web start",
     "lint": "eslint",
-    "typecheck": "pnpm -r typecheck"
+    "lint:styles": "stylelint \"**/*.scss\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm -r typecheck && tsc --noEmit -p tsconfig.json",
+    "test": "playwright test",
+    "test:ui": "playwright test --project=chromium --project=mobile --project=no-js tests/ui",
+    "test:a11y": "playwright test --project=chromium tests/a11y",
+    "test:api": "playwright test --project=api",
+    "check": "pnpm format:check && pnpm lint && pnpm lint:styles && pnpm typecheck && pnpm build && pnpm test"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@nudo/config": "workspace:*",
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^20.19.43",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "prettier": "^3.10.1",
+    "stylelint": "^18.0.0",
+    "stylelint-config-standard-scss": "^18.0.0",
     "typescript": "^5"
   }
 }

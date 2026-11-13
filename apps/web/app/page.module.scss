@@ -1,13 +1,13 @@
-@use 'tokens';
+@use "tokens";
 
 .main {
   display: grid;
   place-items: center;
   min-height: 100dvh;
-  padding: tokens.token('space-xl');
+  padding: tokens.token("space-xl");
 }
 
 .brand {
-  font-size: tokens.token('text-display');
+  font-size: tokens.token("text-display");
   letter-spacing: -0.02em;
 }
