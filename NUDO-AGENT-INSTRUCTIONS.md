@@ -16,7 +16,7 @@
 4. **Cada decisión no impuesta por la letra va a un ADR** en `docs/adr/NNN-titulo.md` (formato: Contexto · Decisión · Alternativas · Consecuencias). Listado mínimo de ADRs en §6.
 5. **Evidencia, no afirmaciones.** Para cada criterio de aceptación dejá la forma de verificarlo: test, script o comando documentado en `docs/evidence/`. El objetivo del lab es poder *defender* decisiones con datos.
 6. **Si algo es ambiguo o contradictorio, frená y preguntá** (ver §2 y §3 para los casos ya detectados). No inventes silenciosamente.
-7. **Nunca** commitees secretos. `.env.local` fuera de git; `.env.example` siempre actualizado.
+7. **Nunca** commitees secretos. `.env.local` está fuera de git y **ya contiene `MONGODB_URI` y `REDIS_URL`** (§3.7): no lo sobrescribas, no lo recrees, no imprimas sus valores en logs, ADRs, tests ni salidas, y no lo copies a ningún archivo versionado. `.env.example` se mantiene actualizado solo con **placeholders** (sin valores reales).
 8. **Al terminar cada fase**, actualizá `docs/PROGRESS.md` (qué requerimientos quedaron cubiertos, cuáles parciales, deuda conocida).
 9. Idioma: código, nombres e identificadores en inglés; comentarios, ADRs, README y contenido de UI/seed en **español** (y la UI/seed también en **inglés**, ver i18n).
 
@@ -44,8 +44,9 @@ Todo lo demás de la letra aplica tal cual. Donde un requerimiento mencione cuen
 
 - Next.js **App Router** con `cacheComponents: true`. Prohibido Pages Router.
 - TypeScript `strict: true`.
+- Bundler: **Turbopack** (dev y build). Prohibido configurar webpack (`webpack()` en `next.config`, plugins/loaders de webpack, flag `--webpack`) y usar herramientas que dependan de webpack (p. ej. `@next/bundle-analyzer`). Ver §3.8.
 - Estilos: **solo SCSS Modules** (`*.module.scss` junto a cada componente). `@use`/`@forward`; **`@import` prohibido**. Prohibido Tailwind, CSS-in-JS con runtime y librerías de componentes con estilos. Headless de a11y: permitido con ADR. Nada de imports `~` en Sass (Turbopack no los soporta).
-- Datos: **MongoDB Atlas** (cluster en la nube o `mongodb/mongodb-atlas-local` en Docker). Facetas con **Atlas Search**.
+- Datos: **MongoDB Atlas** (o la instancia Mongo equivalente con Atlas Search) accedido **exclusivamente a través de `MONGODB_URI`** de `.env.local` (§3.7). Facetas con **Atlas Search**.
 - Redis obligatorio (carrito, sesión de checkout, caché compartida, rate limit, locks/idempotencia, pub/sub).
 - ≥ 2 instancias intercambiables (el objetivo es ≥ 3 en Docker Compose, R04).
 - i18n: ES y EN; ningún string de UI hardcodeado.
@@ -57,20 +58,19 @@ Todo lo demás de la letra aplica tal cual. Donde un requerimiento mencione cuen
 
 ## 3. Decisiones de contexto ya tomadas (respetalas)
 
-### 3.1 Estructura: proyecto existente vs. monorepo (R01)
+### 3.1 Estructura: monorepo con workspaces y Turbopack (R01) — DECIDIDO
 
-La letra pide monorepo con paquetes (`tokens`, `ui`, `i18n`, `commerce`, `data`, `config`). El proyecto ya está creado como app Next.js.
+La letra pide monorepo con paquetes (`tokens`, `ui`, `i18n`, `commerce`, `data`, `config`). **El usuario decidió que el proyecto será un monorepo con workspaces y que el bundler es Turbopack** (detalles en §3.8). El proyecto actual es una app Next.js ya creada, así que:
 
-- **Paso 0:** detectá si ya es monorepo. Si **no** lo es, **frená y presentá al usuario dos opciones** con tu recomendación antes de mover archivos:
-  1. Migrar a workspaces (`apps/web` + `packages/*`, subpath `exports`, el gestor de paquetes que ya usa el proyecto).
-  2. Mantener una sola app con "módulos" internos (`src/modules/{commerce,data,ui,i18n,tokens}`) y fronteras **verificadas automáticamente** (ESLint `no-restricted-imports`/`eslint-plugin-boundaries`, o `dependency-cruiser`).
-- Sea cual sea la opción, las reglas de R01 se mantienen: `commerce` no conoce Next ni React; `ui` no conoce Atlas ni Redis; `data` es `server-only` y nunca llega a un bundle de cliente; un import prohibido **rompe lint o build** (test de que falla).
+- **Paso 0:** detectá si ya es monorepo. Si no lo es, **migralo a workspaces** (`apps/web` + `packages/*`) con el gestor de paquetes que ya usa el proyecto, sin volver a preguntar la forma. Antes de mover nada, escribí el plan de migración (qué se mueve y adónde) en el ADR 003 y hacé la migración en **commits aislados** usando `git mv` para conservar el historial; verificá `build` y `dev` en verde al terminar la migración, antes de agregar funcionalidad.
+- Subpath `exports` explícitos en cada paquete (sin importar todo desde la raíz).
+- Se mantienen las reglas de R01: `commerce` no conoce Next ni React; `ui` no conoce Atlas ni Redis; `data` es `server-only` y nunca llega a un bundle de cliente; un import prohibido **rompe lint o build** (fronteras con ESLint `no-restricted-imports`/`eslint-plugin-boundaries` o `dependency-cruiser`, más un test de Playwright o script que demuestre que un import prohibido falla).
 
-### 3.2 Redis: local con Docker primero, Vercel después
+### 3.2 Redis: local primero, Vercel después
 
 Diseñá Redis detrás de una **interfaz propia** (`packages/data/redis` o equivalente) para que el entorno sea intercambiable por variables de entorno, sin tocar el código de negocio:
 
-- **Local (default, desde Fase 1):** servicio `redis:7` en `docker compose` (con healthcheck y volumen opcional). `REDIS_URL=redis://localhost:6379`. Cliente TCP (`ioredis` o `redis`; justificá en ADR) con **timeouts de conexión y de comando explícitos**, reconexión con backoff y *circuit breaker* simple (R03: Redis caído ⇒ Home/PLP/PDP responden 200; carrito/checkout muestran error amable, no 500).
+- **Local (default, desde Fase 1):** la instancia local de Redis **ya está levantada** y su URL está en `REDIS_URL` de `.env.local` (§3.7). **No crees ni modifiques el contenedor de Redis ni la URL.** Cliente TCP (`ioredis` o `redis`; justificá en ADR) con **timeouts de conexión y de comando explícitos**, reconexión con backoff y *circuit breaker* simple (R03: Redis caído ⇒ Home/PLP/PDP responden 200; carrito/checkout muestran error amable, no 500).
 - **Vercel (preparado, no bloqueante):** Redis en Vercel se provee vía Marketplace (p. ej. Upstash) que expone variables de entorno (URL TCP `rediss://` y/o REST). El adaptador debe poder usar:
   - `REDIS_URL` (TCP, TLS si el esquema es `rediss://`), y
   - opcionalmente un adaptador REST (`@upstash/redis`) detrás de la misma interfaz si el TCP resulta inviable en funciones serverless.
@@ -81,7 +81,7 @@ Diseñá Redis detrás de una **interfaz propia** (`packages/data/redis` o equiv
 ### 3.3 Facetas: MongoDB Atlas Search
 
 - Usá `$searchMeta` con `facet` (o `$search` + `$$SEARCH_META`) en **una sola consulta** que devuelva resultados + conteos (R02/R11). Logueá/medí con `Server-Timing` que es una ida a la base.
-- Entorno local: `mongodb/mongodb-atlas-local` (soporta Atlas Search) o Atlas cloud. Variable `MONGODB_URI`. El script de setup **crea el índice de Atlas Search de forma reproducible** (definición versionada en el repo, p. ej. `packages/data/search/products.index.json`, y un script `db:search-index`).
+- Entorno: la conexión sale **siempre de `MONGODB_URI`** (`.env.local`), ya sea Atlas en la nube o una instancia local con Atlas Search (§3.7). No levantes tu propio contenedor de Mongo. El script de setup **crea el índice de Atlas Search de forma reproducible** (definición versionada en el repo, p. ej. `packages/data/search/products.index.json`, y un script `db:search-index` que usa la API de índices de búsqueda del driver). Si la conexión resulta ser un `mongod` sin Atlas Search, **frená y avisá** al usuario: sin Atlas Search no se puede cumplir R02/R11.
 - Definición del índice (a refinar según tu modelo final):
   - Analyzers por idioma: `lucene.spanish` para campos `*.es`, `lucene.english` para `*.en`. Los textos localizados se indexan por campo-idioma (generado desde la config de locales, no hardcodeado).
   - Tipos `stringFacet` para categoría, color, talle, marca; `numberFacet` (con `boundaries`) para rango de precio; `token`/`string` para filtros exactos; `autocomplete` opcional para búsqueda.
@@ -139,6 +139,29 @@ El usuario no tiene experiencia con otros frameworks de test, así que **Playwri
 - Scripts `npm|pnpm run test`, `test:ui`, `test:api`, `test:a11y` como alias de proyectos de Playwright. La carpeta de pruebas es `tests/` en la raíz del proyecto, con subcarpetas `ui/`, `api/`, `a11y/`.
 - Cada test debe ser legible para alguien que recién empieza: nombres descriptivos en español, un `describe` por requerimiento (`R13 · ProductCard`), y un comentario corto que indique qué criterio de Aceptación de la letra comprueba.
 
+### 3.7 Configuración desde `.env.local` (MongoDB y Redis)
+
+- **Fuente única de conexión:** `MONGODB_URI` (MongoDB/Atlas) y `REDIS_URL` (Redis local) definidas en `.env.local` en la raíz del proyecto. **Esos nombres son fijos**; no los renombres ni crees alias (`DATABASE_URL`, etc.). Antes de empezar, verificá que ambas existan y fallá con un mensaje claro si falta alguna (validación al arranque con un módulo `env` tipado, `server-only`, que nunca exponga valores).
+- **Next.js** carga `.env.local` solo. Los **scripts** (`db:seed`, `db:search-index`, `catalog:*`) y los tests de Playwright deben cargarla también: usá `node --env-file=.env.local` / `tsx --env-file=.env.local` o el mecanismo equivalente del gestor de paquetes, sin agregar `dotenv` salvo que haga falta (justificar).
+- **Nombre de la base de datos:** tomalo del path de `MONGODB_URI` si lo incluye. Si no lo incluye, usá un valor por defecto documentado (p. ej. `nudo`) y avisalo al usuario en `PROGRESS.md`; no inventes una variable nueva sin necesidad.
+- **Seguridad de los datos existentes:** esa base puede contener datos del usuario. El seed **no debe borrar colecciones ajenas**; trabajá solo con las colecciones del proyecto, con prefijo/nombres propios, y hacé el seed idempotente. Antes de cualquier operación destructiva (drop, reseed completo), pedí confirmación explícita. Idem para Redis: **prefijá todas las claves** (p. ej. `nudo:{env}:...`) y nunca uses `FLUSHALL`/`FLUSHDB`.
+- **Contenedores de la app (R04):** dentro de un contenedor, `localhost` apunta al propio contenedor. Si `REDIS_URL` (o `MONGODB_URI`) apuntan a `localhost`/`127.0.0.1`, el compose debe cargar `.env.local` (`env_file`) y sobreescribir **solo el host** para las instancias de la app (p. ej. `host.docker.internal` con `extra_hosts: ["host.docker.internal:host-gateway"]`), sin tocar `.env.local`. Documentá el mecanismo en el README y en `.env.example`.
+- **Tests de Playwright:** el `webServer` y los tests leen `.env.local`. Los tests que escriben datos usan prefijos/colecciones de prueba propios y se limpian solos.
+- **Vercel:** mismos nombres de variable, cargadas en el panel del proyecto (§5).
+
+### 3.8 Turbopack en el monorepo
+
+Todo esto debe verificarse contra la **documentación de la versión instalada** de Next (la compatibilidad de Turbopack cambia entre versiones) y con builds reales:
+
+- **Raíz del monorepo:** configurá `turbopack.root` (y `outputFileTracingRoot` si se usa `output: 'standalone'` para las imágenes Docker de R04) apuntando a la raíz del workspace, para que Turbopack resuelva los paquetes internos. Dejá en el ADR 003 los valores usados y por qué.
+- **Paquetes internos:** si exponen TypeScript/SCSS sin compilar, declaralos en `transpilePackages` de `apps/web/next.config.*`; si se compilan a ESM, el `exports` debe apuntar a la salida. Elegí una estrategia y documentala (ADR 003). Los paquetes deben ser ESM, con `exports` por subpath y `sideEffects` correcto (R34).
+- **Sass:** Turbopack **no soporta imports con `~`**. Para que `apps/web` y `packages/ui` consuman la capa compartida de `packages/tokens` con `@use`, usá rutas de paquete resolubles por Turbopack o `sassOptions` (`loadPaths`/`includePaths`, según lo que soporte la versión instalada) y verificá en build de producción que **no se duplican reglas** (R07). Cada `*.module.scss` vive junto a su componente.
+- **`server-only` / `client-only`:** deben funcionar a través de los límites entre paquetes; el test de R01 (importar `data` desde un Client Component rompe el build) se hace con Turbopack, no con otro bundler.
+- **Análisis de bundles (R34):** no uses `@next/bundle-analyzer` (webpack). Usá el analizador propio de Turbopack incluido en la versión instalada de Next (consultá el comando exacto en la documentación) y/o `source-map-explorer` sobre source maps de producción (`productionBrowserSourceMaps`). Documentá el comando que sí funcione.
+- **`cacheHandlers`, `proxy.ts`, `<ViewTransition>`:** confirmá que funcionan bajo Turbopack con paquetes del workspace (el cache handler debe ser resoluble desde `next.config`).
+- **Scripts de Node** (`db:seed`, `catalog:*`) importan paquetes del workspace: usá un runner TypeScript compatible con workspaces (`tsx`) y `--env-file=.env.local` (§3.7), sin depender de Turbopack.
+- Si algo es incompatible con Turbopack, **no cambies de bundler**: documentá la alternativa compatible en un ADR o avisá al usuario.
+
 ---
 
 ## 4. Plan por fases
@@ -147,9 +170,9 @@ Marcá R-IDs cubiertos al cerrar cada fase. Cada fase termina con: typecheck, li
 
 ### Fase 0 — Descubrimiento y andamiaje
 - Verificar que existe `docs/lab-nextjs-avanzado-commerce.md` y leerlo completo. Si no está, **frená y avisá al usuario**: no reconstruyas la letra de memoria.
-- Inspección del repo (§0.1). Resolver §3.1 con el usuario.
+- Inspección del repo (§0.1). Aplicar §3.1 (monorepo con workspaces, ya decidido) y §3.8 (Turbopack): migración, `turbopack.root`, `transpilePackages`/`exports` y Sass entre paquetes. Dejá `dev` y `build` con Turbopack funcionando en el monorepo antes de seguir.
 - ADRs 001 (versión Next/React y gestor de paquetes) y 002 (Atomic Design sin catálogo: estructura de carpetas, reglas de composición y mapa de tokens/diseño desde `docs/templates/`, incluida la tabla de diferencias entre los dos HTML y la precedencia ya confirmada: catálogo = tokens/diseño, prototipo = flujo/comportamiento; §3.5). Abrir y revisar ambos HTML de `docs/templates/`.
-- `docker-compose.yml` base: `redis`, y `mongodb-atlas-local` (si el usuario no usa Atlas cloud; preguntalo). `.env.example` con todas las variables (`MONGODB_URI`, `MONGODB_DB`, `REDIS_URL`, `REDIS_DRIVER`, `CACHE_L1_PUBSUB`, `INTERNAL_API_SECRET`, `NEXT_PUBLIC_SITE_URL`, `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`, `NEXT_DEPLOYMENT_ID`...).
+- `.env.example` con todas las variables como placeholders (`MONGODB_URI`, `REDIS_URL`, `REDIS_DRIVER`, `CACHE_L1_PUBSUB`, `INTERNAL_API_SECRET`, `NEXT_PUBLIC_SITE_URL`, `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`, `NEXT_DEPLOYMENT_ID`...). **No agregues servicios de Redis ni de Mongo a Docker para desarrollo:** ya existen y se configuran por `.env.local` (§3.7). El `docker-compose.yml` se crea en la Fase 2 (R04) solo para las instancias de la app y la entrada de tráfico.
 - Estructura de módulos y fronteras automáticas (R01) con test que prueba que un import prohibido falla. `server-only` en `data`.
 - Tooling base: ESLint, Prettier, Stylelint (ver R07) y **Playwright Test como único framework de pruebas** (§3.6), script `check` que corre todo.
 
@@ -172,7 +195,7 @@ Marcá R-IDs cubiertos al cerrar cada fase. Cada fase termina con: typecheck, li
 
 ### Fase 2 — Caché, multi-instancia y observabilidad
 - **R20**: perfiles `cacheLife` con nombre de negocio (`catalog`, `stock`, `editorial`...), convención de tags (`product:{id}`, `category:{id}`, `stock:{sku}`, `locale:{l}`) documentada, L1+L2, dedupe por request (`React.cache`), anti-stampede, `Cache-Control` coherente.
-- **R04**: `Dockerfile` multi-stage de la app y compose con **≥ 3 instancias de la misma build**, Redis, conexión a Atlas, y una entrada de tráfico a elección (nginx/traefik/caddy; ADR con trade-offs). Compartir `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`, `deploymentId`/build id, `cacheHandlers`. Header `x-instance-id`. Decidir y documentar la caché de imágenes (por instancia / volumen / CDN). Test e2e que recorre el journey **forzando instancias distintas** por request y otro que **mata una instancia en medio del checkout**.
+- **R04**: `Dockerfile` multi-stage de la app y compose con **≥ 3 instancias de la misma build** conectadas al Redis y a Mongo/Atlas ya configurados en `.env.local` (§3.7; sin levantar nuevos servicios de datos), y una entrada de tráfico a elección (nginx/traefik/caddy; ADR con trade-offs). Compartir `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`, `deploymentId`/build id, `cacheHandlers`. Header `x-instance-id`. Decidir y documentar la caché de imágenes (por instancia / volumen / CDN). Test e2e que recorre el journey **forzando instancias distintas** por request y otro que **mata una instancia en medio del checkout**.
 - **R05**: `Server-Timing` (db, redis, cache hit/miss/stale), logs estructurados (instancia, ruta, locale, request id), registro visible de tags invalidados (con timestamp).
 - Completar el diagrama de §5.2 de la letra (clave, TTL, invalidación y falla de cada capa) en `docs/caching.md`.
 
@@ -217,7 +240,7 @@ Orden sugerido: R14 → R13 → R11 → R12 → R10 → R15 → R16 → R17 → 
 
 El objetivo principal corre con Docker multi-instancia. Dejá el proyecto **listo** para Vercel sin romper el modo Docker:
 
-- Variables de entorno separadas por entorno; `REDIS_DRIVER`/`REDIS_URL` y `CACHE_L1_PUBSUB=false` en Vercel.
+- Variables de entorno separadas por entorno, **con los mismos nombres** (`MONGODB_URI`, `REDIS_URL`): en Vercel se cargan en el panel del proyecto y `.env.local` no se usa. Si la integración de Redis de Vercel inyecta otros nombres (p. ej. `KV_URL`), el adaptador debe mapearlos a `REDIS_URL` sin cambiar el resto del código (verificá los nombres vigentes en la documentación). `REDIS_DRIVER` y `CACHE_L1_PUBSUB=false` en Vercel.
 - Confirmar que el `cacheHandlers` y el adaptador Redis funcionan en funciones serverless (conexiones reutilizadas, sin depender de procesos largos).
 - Imágenes: usar el optimizador de Vercel (ADR sobre la diferencia con el modo Docker).
 - Documentar en `docs/deploy-vercel.md` qué difiere del entorno Docker (sin multi-instancia controlada, sin pub/sub L1, headers `x-instance-id` no representativos) y qué requerimientos solo se demuestran en Docker (R04).
@@ -226,7 +249,7 @@ El objetivo principal corre con Docker multi-instancia. Dejá el proyecto **list
 
 ## 6. ADRs mínimos esperados
 
-001 versión/gestor · 002 Atomic Design sin catálogo y mapa de diseño/tokens · 003 estructura monorepo vs. módulos (§3.1) · 004 contrato de datos sin usuarios (§1.2) · 005 cliente Redis, timeouts y modo degradado · 006 estrategia de caché multinivel + pub/sub L1 (y su desactivación en Vercel) · 007 entrada de tráfico/balanceo · 008 caché de imágenes · 009 modelo de búsqueda/facetas y denormalización de `inStock` · 010 URL de variante y canonical de variantes · 011 preferencia paginación/scroll infinito · 012 política de facetas indexables · 013 política `discontinued` · 014 CSP · 015 fallback de contenido i18n · 016 crawlers de IA · 017 herramienta interna de invalidación (§3.4) · 018 librería de validación y otras dependencias de cliente justificadas.
+001 versión de Next/React, gestor de paquetes y Turbopack · 002 Atomic Design sin catálogo y mapa de diseño/tokens · 003 monorepo con workspaces + Turbopack: migración, `turbopack.root`, paquetes internos, Sass (§3.1 y §3.8) · 004 contrato de datos sin usuarios (§1.2) · 005 cliente Redis, timeouts y modo degradado · 006 estrategia de caché multinivel + pub/sub L1 (y su desactivación en Vercel) · 007 entrada de tráfico/balanceo · 008 caché de imágenes · 009 modelo de búsqueda/facetas y denormalización de `inStock` · 010 URL de variante y canonical de variantes · 011 preferencia paginación/scroll infinito · 012 política de facetas indexables · 013 política `discontinued` · 014 CSP · 015 fallback de contenido i18n · 016 crawlers de IA · 017 herramienta interna de invalidación (§3.4) · 018 librería de validación y otras dependencias de cliente justificadas.
 
 ---
 
