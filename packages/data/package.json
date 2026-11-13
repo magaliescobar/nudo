@@ -14,7 +14,8 @@
     "./redis/*": "./src/redis/*.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "@nudo/commerce": "workspace:*",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@nudo/config": "workspace:*",
     "@types/node": "^20",
+    "sharp": "0.35.5",
     "tsx": "^4.23.15"
   }
 }

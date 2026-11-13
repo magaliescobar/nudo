@@ -18,7 +18,8 @@
     "test:ui": "playwright test --project=chromium --project=mobile --project=no-js tests/ui",
     "test:a11y": "playwright test --project=chromium tests/a11y",
     "test:api": "playwright test --project=api",
-    "check": "pnpm format:check && pnpm lint && pnpm lint:styles && pnpm typecheck && pnpm build && pnpm test"
+    "check": "pnpm format:check && pnpm lint && pnpm lint:styles && pnpm typecheck && pnpm build && pnpm test",
+    "db:seed": "pnpm --filter @nudo/data seed"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

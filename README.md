@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NUDO · Mini Commerce
 
-## Getting Started
+Commerce urbano ES/EN con Next.js 16 (App Router, Turbopack, Cache Components), MongoDB Atlas y Redis. Monorepo pnpm: `apps/web` + `packages/{config,tokens,i18n,commerce,data,ui}` (ADR 003).
 
-First, run the development server:
+## Requisitos
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node ≥ 22.12 y pnpm 10 (`corepack enable`).
+- `.env.local` en la raíz con `MONGODB_URI` y `REDIS_URL` (ver `.env.example`).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Comandos
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Comando                            | Qué hace                                                                                                                                                 |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm install`                     | Instala el workspace                                                                                                                                     |
+| `pnpm dev`                         | `next dev` (Turbopack) en `apps/web`                                                                                                                     |
+| `pnpm build` / `pnpm start`        | Build y servidor de producción                                                                                                                           |
+| `pnpm db:seed`                     | Seed determinístico e idempotente: categorías, 300 productos ES/EN, inventario, redirects, imágenes en `apps/web/public/catalog`, índices y Atlas Search |
+| `pnpm --filter @nudo/tokens build` | Regenera `css/tokens.css` y `scss/_generated.scss` desde `packages/tokens/src/tokens.ts`                                                                 |
+| `pnpm check`                       | Formato, ESLint, Stylelint, typecheck, build y tests Playwright                                                                                          |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Documentación
 
-## Learn More
+- Avance por fase: `docs/PROGRESS.md`
+- Decisiones: `docs/adr/`
+- Tokens: `docs/design-tokens-map.md` · Redis: `docs/redis-keys.md`
 
-To learn more about Next.js, take a look at the following resources:
+## Agregar un idioma (p. ej. portugués)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+El mecanismo está completo; `pt` no se incluye todavía. Agregarlo toca **solo** config, un diccionario y datos de contenido: ninguna página ni componente.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Config** — `packages/i18n/src/config.ts`: agregar la entrada en `localeConfig`:
+   ```ts
+   pt: { dir: "ltr", intl: "pt-BR" },
+   ```
+   `Locale`, `locales`, `generateStaticParams`, la negociación de `proxy.ts`, los índices de slug y el índice de Atlas Search se derivan de ahí.
+2. **Diccionario** — crear `packages/i18n/src/dictionaries/pt.ts` con `export default { … } satisfies Dictionary`. El compilador marca cada clave faltante. Para una traducción parcial, partir de `es` explícitamente: `{ ...es, nav: { … } } satisfies Dictionary`.
+3. **Contenido** — agregar `pt` a los textos localizados del catálogo (`name`, `description`, `slug`, `alt`, colores, categorías) en el seed o en Atlas, y correr `pnpm db:seed` para crear los índices. Lo que falte usa el fallback de ADR 015 (`es`, con `lang` correcto y sin indexar).
+4. **Verificar** — `pnpm check`. El test de R26 falla si alguna página o componente nombra un idioma concreto.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Archivos tocados: 2 (`config.ts`, `dictionaries/pt.ts`) + los datos de contenido.
