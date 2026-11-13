@@ -1,0 +1,4 @@
+{
+  "extends": "@nudo/config/tsconfig/react-library.json",
+  "include": ["src"]
+}

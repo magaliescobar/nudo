@@ -1,0 +1,17 @@
+{
+  "name": "@nudo/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./config": "./src/config.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@nudo/config": "workspace:*",
+    "@types/node": "^20"
+  }
+}

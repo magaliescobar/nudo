@@ -9,15 +9,22 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@nudo/commerce": "workspace:*",
+    "@nudo/data": "workspace:*",
+    "@nudo/i18n": "workspace:*",
+    "@nudo/tokens": "workspace:*",
+    "@nudo/ui": "workspace:*",
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "redis": "^6.3.1"
   },
   "devDependencies": {
+    "@nudo/config": "workspace:*",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "sass": "^1.93.0",
     "typescript": "^5"
   }
 }

@@ -16,6 +16,20 @@ const nextConfig: NextConfig = {
     root: workspaceRoot,
   },
 
+  // Paquetes internos que se publican como TypeScript/SCSS fuente (ADR 003 §2).
+  transpilePackages: [
+    "@nudo/commerce",
+    "@nudo/data",
+    "@nudo/i18n",
+    "@nudo/tokens",
+    "@nudo/ui",
+  ],
+
+  // Permite `@use 'tokens';` desde apps/web y packages/ui sin imports `~` (ADR 003 §3).
+  sassOptions: {
+    loadPaths: [path.join(workspaceRoot, "packages/tokens/scss")],
+  },
+
   cacheHandlers: {
     default: require.resolve("./cache-handlers/redis-handler.js"),
     remote: require.resolve("./cache-handlers/redis-handler.js"),

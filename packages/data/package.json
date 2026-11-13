@@ -1,0 +1,19 @@
+{
+  "name": "@nudo/data",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./env": "./src/env.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@nudo/config": "workspace:*",
+    "@types/node": "^20"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@nudo/commerce",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./money": "./src/money.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@nudo/config": "workspace:*",
+    "@types/node": "^20"
+  }
+}
