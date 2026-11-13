@@ -1,4 +1,5 @@
-// API Sass de tokens: se consume con `@use 'tokens';` (loadPaths en apps/web/next.config.ts).
-// Regla R07: este módulo solo expone funciones/mixins/variables, nunca emite CSS.
-// Los valores y el generador de CSS custom properties llegan en la Fase 1 (R06).
+// API Sass de tokens: `@use 'tokens';` (loadPaths en apps/web/next.config.ts).
+// R07: solo expone funciones y mixins; ningún archivo de este paquete emite CSS.
+// Los valores viven en las custom properties de css/tokens.css (generado, R06).
 @forward "functions";
+@forward "mixins";

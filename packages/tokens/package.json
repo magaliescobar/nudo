@@ -7,6 +7,17 @@
     "**/*.css"
   ],
   "exports": {
-    "./scss": "./scss/_tokens.scss"
+    "./css": "./css/tokens.css",
+    "./scss": "./scss/_tokens.scss",
+    "./tokens": "./src/tokens.ts"
+  },
+  "scripts": {
+    "build": "tsx scripts/build.ts",
+    "build:check": "tsx scripts/build.ts --check",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@nudo/config": "workspace:*",
+    "tsx": "^4.23.15"
   }
 }

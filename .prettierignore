@@ -12,3 +12,7 @@ NUDO-AGENT-INSTRUCTIONS.md
 AGENTS.md
 CLAUDE.md
 learning/
+
+# Generados por packages/tokens/scripts/build.ts
+packages/tokens/css/tokens.css
+packages/tokens/scss/_generated.scss

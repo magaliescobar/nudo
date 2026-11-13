@@ -1,4 +1,6 @@
-// Orden de capas de cascada (R07). Reset, tokens y base se completan en la Fase 1.
+@use "tokens";
+
+// Orden de capas de cascada (R07). Las custom properties llegan en la capa `tokens` (@nudo/tokens/css).
 @layer reset, tokens, base, components, utilities;
 
 @layer reset {
@@ -8,5 +10,80 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+}
+
+@layer base {
+  html {
+    font-family: tokens.token("font-body");
+    color: tokens.token("color-text-primary");
+    background: tokens.token("color-bg");
+    color-scheme: light;
+
+    &[data-theme="dark"] {
+      color-scheme: dark;
+    }
+
+    @include tokens.dark-scheme {
+      &[data-theme="auto"] {
+        color-scheme: dark;
+      }
+    }
+  }
+
+  body {
+    min-height: 100dvh;
+    font-size: tokens.token("text-md");
+    line-height: tokens.token("leading-body");
+    font-variation-settings: "wdth" 100;
+  }
+
+  :focus-visible {
+    @include tokens.focus-ring;
+  }
+
+  @include tokens.reduced-motion {
+    /* stylelint-disable declaration-no-important -- prefers-reduced-motion debe ganarle a cualquier animación de componente */
+    *,
+    *::before,
+    *::after {
+      animation-duration: tokens.token("motion-none") !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: tokens.token("motion-none") !important;
+      scroll-behavior: auto !important;
+    }
+    /* stylelint-enable declaration-no-important */
+  }
+
+  @keyframes nudo-shimmer {
+    from {
+      background-position: 100% 0;
+    }
+
+    to {
+      background-position: -100% 0;
+    }
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: tokens.token("motion-slow");
+    animation-timing-function: tokens.token("ease-move");
   }
 }

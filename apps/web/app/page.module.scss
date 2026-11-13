@@ -9,5 +9,5 @@
 
 .brand {
   font-size: tokens.token("text-display");
-  letter-spacing: -0.02em;
+  letter-spacing: tokens.token("tracking-display");
 }
