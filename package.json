@@ -1,0 +1,20 @@
+{
+  "name": "nudo-monorepo",
+  "private": true,
+  "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @nudo/web dev",
+    "build": "pnpm --filter @nudo/web build",
+    "start": "pnpm --filter @nudo/web start",
+    "lint": "eslint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "typescript": "^5"
+  }
+}
