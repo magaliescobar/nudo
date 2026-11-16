@@ -1,0 +1,4 @@
+// Devuelve la referencia a un token semántico o de componente, p. ej. token('space-md') → var(--space-md).
+@function token($name) {
+  @return var(--#{$name});
+}

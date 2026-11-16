@@ -1,0 +1,12 @@
+// Orden de capas de cascada (R07). Reset, tokens y base se completan en la Fase 1.
+@layer reset, tokens, base, components, utilities;
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+}

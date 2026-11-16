@@ -1,0 +1,14 @@
+pnpm-lock.yaml
+**/.next/
+**/.next-*/
+**/node_modules/
+playwright-report/
+test-results/
+
+# Fuentes provistas por la cátedra: no se reformatean.
+docs/lab-*.md
+docs/templates/
+NUDO-AGENT-INSTRUCTIONS.md
+AGENTS.md
+CLAUDE.md
+learning/
