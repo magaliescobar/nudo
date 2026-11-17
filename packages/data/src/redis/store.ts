@@ -12,15 +12,43 @@ export type RedisResult<T> = { ok: true; value: T } | { ok: false; reason: "unav
 
 const unavailable = { ok: false, reason: "unavailable" } as const;
 
+export type InvalidationRecord = {
+  readonly tag: string;
+  readonly kind: "expire" | "stale";
+  readonly at: number;
+  readonly instance: string;
+};
+
 export type RedisStoreOptions = {
   /** Tope por operación. Redis lento no puede frenar el render. */
   timeoutMs?: number;
   breaker?: CircuitBreaker;
   onDegraded?: (operation: string, error: unknown) => void;
+  /** Duración de cada operación (Server-Timing, R05). */
+  onTiming?: (operation: string, ms: number) => void;
 };
 
 const releaseLockScript =
   "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+
+/** Recién arrancada la instancia el socket puede estar conectando: esperar hasta `ms`, no fallar. */
+function waitUntilReady(client: RedisClient, ms: number): Promise<boolean> {
+  if (!client.isOpen) return Promise.resolve(false);
+  // Un error de conexión (Redis caído) corta la espera: el modo degradado debe ser inmediato.
+  return new Promise((resolve) => {
+    const done = (ready: boolean) => {
+      clearTimeout(timer);
+      client.off("ready", onReady);
+      client.off("error", onError);
+      resolve(ready);
+    };
+    const onReady = () => done(true);
+    const onError = () => done(false);
+    const timer = setTimeout(() => done(false), ms);
+    client.once("ready", onReady);
+    client.once("error", onError);
+  });
+}
 
 export function createRedisStore(client: RedisClient, options: RedisStoreOptions = {}) {
   const timeoutMs = options.timeoutMs ?? 300;
@@ -28,12 +56,13 @@ export function createRedisStore(client: RedisClient, options: RedisStoreOptions
 
   async function run<T>(operation: string, fn: () => Promise<T>): Promise<RedisResult<T>> {
     if (!breaker.canRequest()) return unavailable;
-    if (!client.isReady) {
+    if (!client.isReady && !(await waitUntilReady(client, timeoutMs))) {
       breaker.recordFailure();
       options.onDegraded?.(operation, new Error("Redis no conectado"));
       return unavailable;
     }
     let timer: NodeJS.Timeout | undefined;
+    const start = performance.now();
     try {
       const value = await Promise.race([
         fn(),
@@ -49,6 +78,7 @@ export function createRedisStore(client: RedisClient, options: RedisStoreOptions
       return unavailable;
     } finally {
       clearTimeout(timer);
+      options.onTiming?.(operation, performance.now() - start);
     }
   }
 
@@ -112,6 +142,18 @@ export function createRedisStore(client: RedisClient, options: RedisStoreOptions
       await subscriber.connect();
       await subscriber.subscribe(invalidationChannel, (message) => onTags(JSON.parse(message)));
       return () => subscriber.quit();
+    },
+
+    /** Últimas invalidaciones de tags (más reciente primero), R05. */
+    invalidations: {
+      async recent(limit = 50): Promise<RedisResult<InvalidationRecord[]>> {
+        const result = await run("tags.log", () => client.lRange(keys.tagLog, 0, limit - 1));
+        if (!result.ok) return result;
+        return {
+          ok: true,
+          value: result.value.map((raw) => JSON.parse(raw) as InvalidationRecord),
+        };
+      },
     },
 
     // 6 · Lock e idempotencia al confirmar el pedido

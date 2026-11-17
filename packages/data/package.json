@@ -11,7 +11,9 @@
     "./mongo/indexes": "./src/mongo/indexes.ts",
     "./repositories/*": "./src/repositories/*.ts",
     "./redis": "./src/redis.ts",
-    "./redis/*": "./src/redis/*.ts"
+    "./redis/*": "./src/redis/*.ts",
+    "./cache/*": "./src/cache/*.ts",
+    "./observability/*": "./src/observability/*.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

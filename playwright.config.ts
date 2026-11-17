@@ -9,6 +9,7 @@ const baseURL = process.env.BASE_URL ?? `http://localhost:${port}`;
  * - mobile:   UI en viewport móvil (motor Chromium).
  * - no-js:    UI sin JavaScript (R36: flujos críticos deben funcionar con HTML).
  * - api:      Route Handlers, fronteras y contratos HTTP, sin navegador.
+ * - multi:    multi-instancia (R04) contra docker compose; se saltea sin MULTI_BASE_URL.
  */
 export default defineConfig({
   testDir: "./tests",
@@ -39,6 +40,12 @@ export default defineConfig({
     {
       name: "api",
       testMatch: /api\/.*\.spec\.ts/,
+    },
+    {
+      // R04 contra el compose: nginx + 3 instancias (MULTI_BASE_URL, p. ej. http://localhost:8080).
+      name: "multi",
+      testMatch: /multi\/.*\.spec\.ts/,
+      use: { baseURL: process.env.MULTI_BASE_URL ?? "http://localhost:8080" },
     },
   ],
   // Se prueba contra el build de producción: el comportamiento de caché de dev no es representativo.

@@ -71,3 +71,9 @@ Los scripts de Node (`db:seed`, `catalog:*`) consumen los mismos paquetes con `t
 - Los comandos se corren desde la raíz (`pnpm dev`, `pnpm build`, `pnpm check`) y delegan en `@nudo/web` con `--filter`.
 - Agregar un paquete = carpeta en `packages/`, `package.json` con `exports`, entrada en `transpilePackages` y reglas de frontera en `eslint.config.mjs`.
 - El historial de los archivos movidos se conserva (`git log --follow apps/web/app/page.tsx`).
+
+## Adenda (Fase 2): `output: 'standalone'` para Docker
+
+- `outputFileTracingRoot` = raíz del workspace (igual que `turbopack.root`), para que el trazado incluya `packages/*` y sus dependencias.
+- `output: 'standalone'` solo cuando `NEXT_OUTPUT=standalone` (lo fija el `Dockerfile`); en local y Vercel el build sigue siendo el normal.
+- La salida queda en `apps/web/.next/standalone/apps/web/server.js`; `static` y `public` se copian aparte (ver `Dockerfile`).

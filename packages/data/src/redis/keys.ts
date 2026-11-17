@@ -1,6 +1,9 @@
 // Claves y TTLs de Redis (R03). Documentado en docs/redis-keys.md: mantener ambos en sync.
 export const redisPrefix = "nudo";
 
+/** Espacio del cache handler (ADR 006): por entorno; las entradas además llevan el deploymentId. */
+export const cacheNamespace = `${redisPrefix}:${process.env.NUDO_ENV ?? process.env.NODE_ENV ?? "development"}`;
+
 export const ttlSeconds = {
   /** Carrito de invitado: una semana sin actividad (se renueva en cada escritura). */
   cart: 7 * 24 * 60 * 60,
@@ -22,6 +25,8 @@ export const keys = {
     `${redisPrefix}:rl:${bucket}:${subject}:${window}`,
   orderLock: (idempotencyKey: string) => `${redisPrefix}:lock:order:${idempotencyKey}`,
   idempotency: (idempotencyKey: string) => `${redisPrefix}:idem:order:${idempotencyKey}`,
+  /** Log de invalidaciones (lo escribe apps/web/cache-handlers/nudo-handler.js). */
+  tagLog: `${cacheNamespace}:tag-log`,
 } as const;
 
 /** Canal pub/sub de invalidación de cachés L1 entre instancias. */
@@ -31,6 +36,8 @@ export const invalidationChannel = `${redisPrefix}:invalidate`;
 export const rateLimits = {
   search: { limit: 30, windowSeconds: 10, onRedisDown: "allow" },
   orderConfirm: { limit: 5, windowSeconds: 60, onRedisDown: "deny" },
+  /** Endpoint interno de invalidación: fail-closed, frena fuerza bruta del secreto. */
+  internal: { limit: 120, windowSeconds: 60, onRedisDown: "deny" },
 } as const satisfies Record<
   string,
   { limit: number; windowSeconds: number; onRedisDown: "allow" | "deny" }

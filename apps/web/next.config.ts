@@ -15,6 +15,24 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
 
+  // Mismo id en todas las instancias de una build (R04): versiona assets, `'use cache'` y Server Actions.
+  deploymentId: process.env.NEXT_DEPLOYMENT_ID || undefined,
+
+  // Imagen Docker mínima (R04). Se traza desde la raíz para incluir packages/*.
+  output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
+  outputFileTracingRoot: workspaceRoot,
+
+  // Perfiles de negocio (R20, docs/caching.md). Segundos: stale = router cache del cliente,
+  // revalidate = SWR en servidor, expire = máximo servible stale. Los tags invalidan antes.
+  cacheLife: {
+    // Ficha, galería, precios de lista, categorías: cambian por operación de backoffice (tag).
+    catalog: { stale: 300, revalidate: 900, expire: 86_400 },
+    // Disponibilidad por SKU: cambia con cada venta; el checkout siempre revalida contra Mongo.
+    stock: { stale: 30, revalidate: 30, expire: 300 },
+    // Home, banners, textos de campaña.
+    editorial: { stale: 900, revalidate: 3_600, expire: 604_800 },
+  },
+
   turbopack: {
     root: workspaceRoot,
   },
@@ -27,9 +45,22 @@ const nextConfig: NextConfig = {
     loadPaths: [path.join(workspaceRoot, "packages/tokens/scss")],
   },
 
+  // L1 en memoria + L2 Redis con tags distribuidos (ADR 006).
   cacheHandlers: {
-    default: require.resolve("./cache-handlers/redis-handler.js"),
-    remote: require.resolve("./cache-handlers/redis-handler.js"),
+    default: require.resolve("./cache-handlers/nudo-handler.js"),
+    remote: require.resolve("./cache-handlers/nudo-handler.js"),
+  },
+
+  async headers() {
+    return [
+      {
+        // Imágenes locales del seed: nombre determinista por variante, no hasheado.
+        source: "/catalog/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+        ],
+      },
+    ];
   },
 };
 
