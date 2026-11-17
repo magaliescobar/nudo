@@ -19,7 +19,16 @@
     "test:a11y": "playwright test --project=chromium tests/a11y",
     "test:api": "playwright test --project=api",
     "check": "pnpm format:check && pnpm lint && pnpm lint:styles && pnpm typecheck && pnpm build && pnpm test",
-    "db:seed": "pnpm --filter @nudo/data seed"
+    "db:seed": "pnpm --filter @nudo/data seed",
+    "catalog:set-price": "pnpm --filter @nudo/data exec tsx scripts/catalog.ts set-price",
+    "catalog:set-stock": "pnpm --filter @nudo/data exec tsx scripts/catalog.ts set-stock",
+    "catalog:rename": "pnpm --filter @nudo/data exec tsx scripts/catalog.ts rename",
+    "catalog:set-status": "pnpm --filter @nudo/data exec tsx scripts/catalog.ts set-status",
+    "catalog:set-slug": "pnpm --filter @nudo/data exec tsx scripts/catalog.ts set-slug",
+    "catalog:invalidate": "pnpm --filter @nudo/data exec tsx scripts/catalog.ts invalidate",
+    "env:secrets": "node scripts/env-secrets.mjs",
+    "docker:up": "docker compose up --build -d",
+    "test:multi": "playwright test --project=multi"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

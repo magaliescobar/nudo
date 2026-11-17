@@ -47,3 +47,27 @@ Estado: **cerrada** (`pnpm check` verde: formato, ESLint sin errores, Stylelint,
 | R18 contrato | ADR 004                                                                                                                                      | —                                                                    |
 
 Deuda que pasa a la Fase 2: el cache handler legado (4 warnings de ESLint) se reemplaza por la caché multinivel.
+
+## Fase 2 — Caché, multi-instancia y observabilidad
+
+Estado: **cerrada con un pendiente explícito** (el test de matar una instancia "a mitad del checkout" usa el recorrido de lectura; el checkout llega en la Fase 3).
+
+| Req                   | Estado                                                                                                                                                                  | Evidencia                                                                      |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| R20 perfiles y tags   | Hecho: `catalog` / `stock` / `editorial` en `next.config.ts`; convención `product:` `category:` `stock:` `locale:` `catalog` `editorial`                                | `docs/caching.md`, `packages/data/src/cache/tags.ts`                           |
+| R20 L1 + L2 + pub/sub | Hecho: `apps/web/cache-handlers/nudo-handler.js` (interfaz de Next 16.4.6), `CACHE_L1_PUBSUB` para Vercel                                                               | ADR 006, `tests/multi` (miss en web-1 ⇒ hit en web-2/3)                        |
+| R20 dedupe            | Hecho: `React.cache` sobre cada lectura de `apps/web/lib/catalog.ts`                                                                                                    | —                                                                              |
+| R20 stampede          | Hecho: lock `SET NX PX` + espera en L2 + single-flight local                                                                                                            | 100 requests / 1 instancia y 150 / 3 instancias ⇒ 1 consulta a Atlas por clave |
+| R20 Cache-Control     | Hecho para assets, imágenes fuente y route handlers; páginas en la Fase 3                                                                                               | `docs/caching.md`                                                              |
+| R20 nada privado      | Hecho: carrito/checkout fuera de `'use cache'`; el endpoint interno rechaza tags fuera de convención                                                                    | `tests/api/r20-r05-cache.spec.ts`                                              |
+| R04                   | Hecho: Dockerfile multi-stage (standalone), compose con 3 instancias + nginx sin Redis/Mongo propios, `x-instance-id`, `deploymentId` y clave de Server Actions comunes | ADR 007, ADR 008, `tests/multi/r04-multi-instance.spec.ts`                     |
+| R04 matar instancia   | Parcial: `docker compose kill web-2` a mitad de un recorrido ⇒ todos los requests 200 en otras instancias. Falta repetirlo dentro del checkout (Fase 3)                 | `tests/multi`                                                                  |
+| R05                   | Hecho: `Server-Timing` (`catalog`, `redis`, `cache` hit/miss/stale, `total`), logs JSON con instancia/ruta/locale/request id, log de tags invalidados                   | `tests/api/r20-r05-cache.spec.ts`; la PDP en DevTools llega con la Fase 3      |
+| §3.4 herramienta      | Hecho: `pnpm catalog:*` + `POST/GET /api/internal/invalidate` + `/api/internal/stats` (secreto en tiempo constante, rate limit, noindex)                                | ADR 017                                                                        |
+
+Notas:
+
+- El cuerpo de `'use cache'` corre fuera del `AsyncLocalStorage` del request: en un miss el tiempo de Mongo se ve dentro de `catalog;dur`, y las consultas en `/api/internal/stats` (ADR 006).
+- `pnpm env:secrets` agregó a `.env.local` `INTERNAL_API_SECRET` y `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` (sin sobrescribir).
+- Vercel: `docs/deploy-vercel.md`. Los nombres de variables que inyecta Vercel al provisionar Redis quedan por verificar.
+- Multi-instancia: `NEXT_DEPLOYMENT_ID=… docker compose up --build -d` y `MULTI_BASE_URL=http://localhost:8080 pnpm test:multi`.

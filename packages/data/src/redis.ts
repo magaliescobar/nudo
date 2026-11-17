@@ -1,5 +1,6 @@
 import "server-only";
 import { getServerEnv } from "./env";
+import { recordTiming } from "./observability/context";
 import { connectRedis } from "./redis/connect";
 import { createRedisStore, type RedisStore } from "./redis/store";
 
@@ -21,7 +22,7 @@ function logDegraded(operation: string, error: unknown) {
 export function getRedisStore(): RedisStore {
   globalForRedis.__nudoRedisStore ??= createRedisStore(
     connectRedis(getServerEnv().REDIS_URL, (error) => logDegraded("connection", error)),
-    { onDegraded: logDegraded },
+    { onDegraded: logDegraded, onTiming: (_operation, ms) => recordTiming("redis", ms) },
   );
   return globalForRedis.__nudoRedisStore;
 }

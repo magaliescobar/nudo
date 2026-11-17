@@ -1,0 +1,20 @@
+# Deploy en Vercel: diferencias con el compose multi-instancia
+
+| Tema                                 | Docker (ADR 007)                                   | Vercel                                                                                                                                                                                     |
+| ------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Root Directory                       | —                                                  | `apps/web`, con "Include files outside the root directory" activado (usa `packages/*`)                                                                                                     |
+| Instancias                           | 3 procesos largos detrás de nginx                  | Funciones serverless efímeras                                                                                                                                                              |
+| `CACHE_L1_PUBSUB`                    | `true`: L1 invalidada por pub/sub                  | **`false`**: no hay procesos largos que mantengan una suscripción; `refreshTags()` relee el hash de tags de Redis en cada request y L2 + `revalidateTag` son la fuente de verdad (ADR 006) |
+| Redis                                | Redis existente del host (`REDIS_URL`, TCP)        | Redis accesible desde Internet (`REDIS_URL` TCP). Un `localhost` no sirve                                                                                                                  |
+| `REDIS_DRIVER`                       | `tcp`                                              | `tcp`. El adaptador `rest` es opcional en §3.3 y **no está implementado**: solo haría falta si el TCP resultara inviable en funciones                                                      |
+| `NEXT_DEPLOYMENT_ID`                 | Fijo por build (`docker compose` lo pasa como arg) | Lo gestiona Vercel por deploy (skew protection)                                                                                                                                            |
+| `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` | Misma clave en las 3 instancias (`.env.local`)     | Una sola build por deploy; definirla igual para que sobreviva entre deploys                                                                                                                |
+| Imágenes (`/_next/image`)            | Caché compartida en nginx (ADR 008)                | CDN de Vercel                                                                                                                                                                              |
+| Atlas                                | IP del host en Network Access                      | Permitir las IPs de salida de Vercel (o la integración de Atlas)                                                                                                                           |
+| `INSTANCE_ID`                        | `web-1..3`                                         | Sin definir: se usa el hostname de la función                                                                                                                                              |
+
+## Variables
+
+`MONGODB_URI`, `REDIS_URL`, `CACHE_L1_PUBSUB=false`, `REDIS_DRIVER=tcp`, `INTERNAL_API_SECRET`, `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`, `NEXT_PUBLIC_SITE_URL`.
+
+**Pendiente de verificar:** los nombres exactos de las variables que Vercel inyecta al provisionar Redis desde su Marketplace. No se pudieron leer de la documentación vigente desde este entorno (las páginas se renderizan con JavaScript), así que no se listan de memoria. Al provisionar, copiar acá los nombres que aparezcan en Settings → Environment Variables y mapear la URL TCP a `REDIS_URL`.

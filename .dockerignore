@@ -1,0 +1,12 @@
+.git
+**/node_modules
+**/.next
+**/.turbo
+**/tsconfig.tsbuildinfo
+.env*
+!.env.example
+docker/.env*
+test-results
+playwright-report
+blob-report
+docs/templates
