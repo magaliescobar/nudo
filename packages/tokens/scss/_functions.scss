@@ -1,4 +1,27 @@
-// Devuelve la referencia a un token semántico o de componente, p. ej. token('space-md') → var(--space-md).
+@use "sass:list";
+@use "sass:map";
+@use "generated";
+
+/// Referencia a un token semántico o de componente: `token('space-md')` → `var(--space-md)`.
+/// Los primitivos (`--p-*`) no son accesibles desde componentes: un nombre desconocido es error de compilación.
 @function token($name) {
+  @if not list.index(generated.$names, $name) {
+    @error 'Token desconocido: "#{$name}". Usá un semántico o de componente de packages/tokens/src/tokens.ts.';
+  }
+
   @return var(--#{$name});
+}
+
+/// Ancho mínimo de un breakpoint: `breakpoint('md')` → `60rem`.
+@function breakpoint($name) {
+  @if not map.has-key(generated.$breakpoints, $name) {
+    @error 'Breakpoint desconocido: "#{$name}". Opciones: #{map.keys(generated.$breakpoints)}.';
+  }
+
+  @return map.get(generated.$breakpoints, $name);
+}
+
+/// Duración + curva para transition/animation: `transition: opacity motion('fast', 'enter')`.
+@function motion($duration: "base", $ease: "enter") {
+  @return token("motion-#{$duration}") token("ease-#{$ease}");
 }

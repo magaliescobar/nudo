@@ -1,0 +1,4 @@
+{
+  "extends": "@nudo/config/tsconfig/library.json",
+  "include": ["src", "scripts"]
+}

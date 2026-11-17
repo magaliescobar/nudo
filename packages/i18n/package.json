@@ -5,10 +5,16 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    "./config": "./src/config.ts"
+    "./config": "./src/config.ts",
+    "./negotiate": "./src/negotiate.ts",
+    "./format": "./src/format.ts",
+    "./dictionaries": "./src/dictionaries.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@nudo/config": "workspace:*",

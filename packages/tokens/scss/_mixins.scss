@@ -1,0 +1,90 @@
+@use "functions" as *;
+
+/// Media query desde un breakpoint en adelante (mobile first).
+@mixin up($name) {
+  @media (min-width: breakpoint($name)) {
+    @content;
+  }
+}
+
+/// Container query de ancho mínimo. El contenedor declara `container-type: inline-size`.
+@mixin container-up($min-width, $name: null) {
+  @if $name {
+    @container #{$name} (min-width: #{$min-width}) {
+      @content;
+    }
+  } @else {
+    @container (min-width: #{$min-width}) {
+      @content;
+    }
+  }
+}
+
+/// Anillo de foco accesible con los tokens de foco.
+@mixin focus-ring {
+  outline: token("border-thick") solid token("color-focus");
+  outline-offset: token("border-thick");
+}
+
+/// Aplica el anillo solo con foco de teclado.
+@mixin focus-visible {
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+@mixin motion-safe {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}
+
+@mixin dark-scheme {
+  @media (prefers-color-scheme: dark) {
+    @content;
+  }
+}
+
+/// Recorta el texto con elipsis en `$lines` líneas.
+@mixin truncate($lines: 1) {
+  overflow: hidden;
+
+  @if $lines == 1 {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $lines;
+  }
+}
+
+/// Fondo animado de skeleton. Los @keyframes `nudo-shimmer` viven una sola vez en globals (capa base).
+@mixin skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    token("color-skeleton") 0%,
+    token("color-skeleton-shine") 50%,
+    token("color-skeleton") 100%
+  );
+  background-size: 200% 100%;
+
+  @include motion-safe {
+    animation: nudo-shimmer token("motion-loop") linear infinite;
+  }
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

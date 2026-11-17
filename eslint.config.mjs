@@ -109,6 +109,16 @@ const eslintConfig = defineConfig([
   ),
 
   {
+    // Descartar campos con rest (`{ _id, ...doc }`) es intencional; `_` marca parámetros sin uso.
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { ignoreRestSiblings: true, argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+    },
+  },
+
+  {
     // Los cache handlers se cargan con require.resolve desde next.config: son CommonJS a propósito.
     files: ["apps/web/cache-handlers/**/*.js"],
     rules: { "@typescript-eslint/no-require-imports": "off" },
