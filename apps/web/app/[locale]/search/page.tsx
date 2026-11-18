@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
-import { isLocale } from "@nudo/i18n/config";
+import { defaultLocale, isLocale } from "@nudo/i18n/config";
 import { getDictionary } from "@nudo/i18n/dictionaries";
 import { PlpView } from "../_components/PlpView";
 import { parsePlpParams, plpHref, stateToFilters } from "../../../lib/plp";
 import { getCategories, getPlpPage, getPlpStock } from "../../../lib/plp";
+import { searchPaths } from "../../../lib/seo";
 
 // `instant=false` + datos de request fuera de Suspense: la PLP es 100 % URL-driven
 // (searchParams) y debe
@@ -20,11 +21,20 @@ type Props = {
   searchParams: SearchParams;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = await getDictionary(locale);
-  return { title: t.catalog.searchPlaceholder };
+  const state = parsePlpParams(await searchParams);
+  // R28: la búsqueda interna nunca se indexa; canonical a la URL normalizada propia.
+  return {
+    title: t.catalog.searchPlaceholder,
+    alternates: {
+      canonical: plpHref(locale, { kind: "search" }, state),
+      languages: { ...searchPaths(), "x-default": `/${defaultLocale}/search` },
+    },
+    robots: { index: false, follow: true },
+  };
 }
 
 export default async function SearchPage({ params, searchParams }: Props) {

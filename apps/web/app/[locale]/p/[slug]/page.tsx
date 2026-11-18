@@ -11,6 +11,8 @@ import { toCardProduct } from "@nudo/commerce/card";
 import { getCategories, getProductBySlug, getStock } from "../../../../lib/catalog";
 import { getPlpPage, getPlpStock } from "../../../../lib/plp";
 import { addToCartPdp } from "../../../../lib/actions/cart";
+import { localizedAlternates, productPaths, categoryPath } from "../../../../lib/seo";
+import { breadcrumbJsonLd, JsonLd, productGroupJsonLd } from "../../../../lib/jsonld";
 import styles from "./page.module.scss";
 
 // `instant=false` + datos de request fuera de Suspense: la PDP lee ?v/?img
@@ -34,12 +36,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!isLocale(locale)) return {};
   const product = await load(locale, slug);
   if (!product) return {};
+  // Política de canonical (R14/ADR 020): una URL canónica por producto; la variante
+  // viaja en ?v= y no genera URLs alternativas indexables.
+  const alternates = localizedAlternates(locale, productPaths(product));
   return {
     title: product.name[locale],
     description: product.description[locale],
-    // Política de canonical (R14/ADR): una URL canónica por producto; la variante
-    // viaja en ?v= y no genera URLs alternativas indexables.
-    alternates: { canonical: `/${locale}/p/${product.slug[locale]}` },
+    alternates,
+    // R32/ADR: discontinued sigue sirviendo 200 (los enlaces viejos funcionan)
+    // pero sale del índice, del sitemap y de la PLP; su Offer queda OutOfStock.
+    ...(product.status === "discontinued" && { robots: { index: false } }),
+    // og:image sale de opengraph-image.tsx (R33, tarjeta dinámica con precio/marca);
+    // twitter cae en og:image por convención de la spec.
+    openGraph: {
+      title: product.name[locale],
+      description: product.description[locale],
+      url: alternates.canonical,
+      type: "website",
+    },
+    twitter: { card: "summary_large_image" },
   };
 }
 
@@ -98,8 +113,18 @@ export default async function PdpPage({ params, searchParams }: Props) {
     { label: product.name[locale] },
   ];
 
+  const jsonLdItems = [
+    { name: t.pdp.breadcrumbsHome, path: `/${locale}` },
+    ...(category
+      ? [{ name: category.name[locale], path: categoryPath(category, categories, locale) }]
+      : []),
+    { name: product.name[locale], path: `/${locale}/p/${product.slug[locale]}` },
+  ];
+
   return (
     <div className={styles.pdp}>
+      <JsonLd data={breadcrumbJsonLd(locale, jsonLdItems)} />
+      <JsonLd data={productGroupJsonLd(locale, product, stock, categories)} />
       <Breadcrumbs items={crumbs} label={t.pdp.breadcrumbsHome} />
       <div className={styles.layout}>
         <ProductGallery

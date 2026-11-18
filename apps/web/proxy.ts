@@ -7,6 +7,8 @@ import { type NextRequest, NextResponse } from "next/server";
 // en cada respuesta (el id llega de la entrada de tráfico o se genera acá). Sin auth ni lógica por IP.
 export async function proxy(request: NextRequest) {
   const requestId = resolveRequestId(request.headers.get("x-request-id"));
+  const normalized = normalizeUrl(request);
+  if (normalized) return normalized;
   const orderDenial = await guardOrderAccess(request);
   if (orderDenial) return orderDenial;
   const pageDenial = await guardPageAccess(request);
@@ -84,6 +86,9 @@ async function guardPageAccess(request: NextRequest): Promise<NextResponse | nul
   let kind: string;
   let value: string;
   if (section === "p") {
+    // El slug es un solo segmento; `/p/{slug}/opengraph-image` y similares no
+    // pasan por el guard (las resuelve su propio handler).
+    if (rest.includes("/")) return null;
     kind = "product";
     value = rest;
   } else if (section === "c") {
@@ -119,12 +124,66 @@ async function guardPageAccess(request: NextRequest): Promise<NextResponse | nul
   if (check.status === 404) return new NextResponse("Not Found", { status: 404 });
   if (check.status === 204) return null;
   if (check.status === 200) {
-    const body = (await check.json().catch(() => null)) as { redirect?: string } | null;
+    const body = (await check.json().catch(() => null)) as {
+      redirect?: string;
+      status?: number;
+    } | null;
     if (body?.redirect?.startsWith(`/${locale}/`)) {
-      return NextResponse.redirect(new URL(body.redirect, request.nextUrl.origin), 307);
+      // 301/308 vienen de la tabla Redirect (slugs viejos); 307 es guarda de checkout.
+      const status = body.status === 301 || body.status === 308 ? body.status : 307;
+      return NextResponse.redirect(new URL(body.redirect, request.nextUrl.origin), status);
     }
   }
   return null;
+}
+
+// R32: normalización de URLs canónicas — sin trailing slash, path en minúsculas
+// y sin query params basura (solo se conservan los conocidos). 301 permanente.
+// Parámetros con semántica en la app; el resto se considera basura y se quita
+// con 301 (utm_*, trackers, typos). Facetas: cat/color/size/brand/pmin/pmax/stock.
+const KNOWN_PARAMS = new Set([
+  "q",
+  "page",
+  "sort",
+  "view",
+  "v",
+  "img",
+  "e",
+  "token",
+  "cat",
+  "color",
+  "size",
+  "brand",
+  "pmin",
+  "pmax",
+  "stock",
+]);
+
+function normalizeUrl(request: NextRequest): NextResponse | null {
+  const { pathname, searchParams } = request.nextUrl;
+  // Solo rutas públicas indexables: APIs/assets tienen sus propios params y las
+  // privadas (order/checkout/cart) llevan IDs case-sensitive — normalizar su
+  // case rompería el pedido (regresión detectada en tests).
+  if (pathname.startsWith("/api/") || pathname.startsWith("/_next/") || /\.[^/]+$/.test(pathname)) {
+    return null;
+  }
+  const segments = pathname.split("/");
+  if (!isLocale((segments[1] ?? "").toLowerCase())) return null;
+  const section = segments[2]?.toLowerCase();
+  if (section !== undefined && !["p", "c", "search"].includes(section)) return null;
+
+  const dest = request.headers.get("sec-fetch-dest");
+  if (dest != null && dest !== "document") return null; // RSC/prefetch: no tocar.
+
+  const lower = pathname.toLowerCase();
+  const stripped = lower.length > 1 && lower.endsWith("/") ? lower.slice(0, -1) : lower;
+  const garbage = [...searchParams.keys()].filter((key) => !KNOWN_PARAMS.has(key));
+
+  if (stripped === pathname && garbage.length === 0) return null;
+  const url = request.nextUrl.clone();
+  url.pathname = stripped;
+  for (const key of garbage) url.searchParams.delete(key);
+  return NextResponse.redirect(url, 301);
 }
 
 function route(request: NextRequest, requestId: string) {

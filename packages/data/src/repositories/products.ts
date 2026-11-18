@@ -22,6 +22,12 @@ export function createProductRepository(db: Db) {
       return doc ? toProduct(doc) : null;
     },
 
+    /** Sitemap/llms.txt: todos los `active`; `discontinued`/`draft` nunca son indexables (R29). */
+    async listActive(): Promise<Product[]> {
+      const docs = await products.find({ status: "active" }).toArray();
+      return docs.map(toProduct);
+    },
+
     /** Productos que contienen los SKUs dados (carrito, pedido). */
     async findBySkus(skus: readonly string[]): Promise<Product[]> {
       const docs = await products.find({ "variants.skus.sku": { $in: [...skus] } }).toArray();

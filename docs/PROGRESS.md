@@ -99,3 +99,26 @@ Notas:
 - Las guardas de `proxy.ts` solo corren con `Sec-Fetch-Dest: document`; RSC/prefetch/actions (`empty`) pasan al render streameado sin doble latencia.
 - `page-guard` catálogo es fail-open (una caída del guard no tira la tienda); checkout y order-access son fail-closed.
 - Deuda conocida: warnings de `cacheTag()` cuando un PLP cachea stock de miles de SKUs (Next descarta tags sobre el máximo); la frescura queda acotada por `expire` del perfil `stock` (300 s). Pendiente: medir bundle de la PDP (R25) y probar kill de instancia a mitad del checkout.
+
+## Fase 4 — SEO (R27–R33)
+
+Estado: **implementada y verificada** (`pnpm check` verde; 14 tests nuevos en `tests/api/phase4-seo.spec.ts`).
+
+| Req           | Estado                                                                                                                                                                                             | Evidencia                                                  |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| R27 metadata  | Hecho: `metadataBase` + title template en layout, canonical absoluto, hreflang es/en/x-default recíproco, OG + `summary_large_image`                                                               | `lib/seo.ts`, spec R27                                     |
+| R28 robots    | Hecho: `robots.ts` con sitemap, disallow de privados/API/`?sort`/`?view`/`?img`, crawlers de entrenamiento bloqueados; facetas por meta robots (`indexablePlpState`, ≤1 dimensión indexable)       | `app/robots.ts`, spec R28, ADR 025                         |
+| R29 sitemaps  | Hecho: `/sitemap.xml` índice + `/sitemaps/{pages,categories,products-N}.xml` paginado (200/pág), `lastmod` desde `updatedAt`, imágenes, hreflang por `<url>`, solo `active`                        | `lib/sitemap.ts`, `app/sitemaps/[file]/route.ts`, spec R29 |
+| R30 JSON-LD   | Hecho: `Organization` + `WebSite`/`SearchAction` en layout; `BreadcrumbList` + `ItemList` en PLP; `ProductGroup` + `hasVariant`/`Offer`/disponibilidad real en PDP; serialización con `<` escapado | `lib/jsonld.tsx`, spec R30                                 |
+| R31 llms.txt  | Hecho: `/llms.txt` (secciones por locale + destacados) y `/llms-full.txt` (catálogo completo), links absolutos, `use cache` + tag catalog                                                          | `app/llms*.txt/route.ts`, spec R31                         |
+| R32 redirects | Hecho: 301/308 desde colección `redirects` vía `page-guard` (cacheado tag `catalog`); normalización 301 de mayúsculas/trailing slash/params basura en `proxy.ts`; 404 real sin redirect            | `proxy.ts`, `page-guard`, spec R32                         |
+| R33 OG images | Hecho: `opengraph-image.tsx` del PDP (nombre/marca/categoría/precio, localizado) + route handler `/{locale}/og/category/{path}` para PLP (la convención no admite catch-all)                       | verificado `curl` 200 image/png ambas                      |
+
+ADR nuevo: 025 (política de indexación, facetas, crawlers IA, discontinued). Tabla resumen en `README.md`.
+
+Notas:
+
+- **Política discontinued**: PDP sigue en 200 (enlaces viejos no se rompen) con `noindex`; excluido de sitemap (`listActive`) y PLP; `Offer.availability` queda `OutOfStock` via stock real. `draft` → 404 real.
+- **Bug encontrado**: `normalizeUrl` corría antes del bypass `/api/` y quitaba los params del fetch interno `page-guard` → el guard fallaba abierto y los 404 volvían 200. Ahora normaliza solo rutas de página (salta `/api/`, `/_next/`, extensiones).
+- **Bug encontrado**: el guard `/p/` 404eaba `…/opengraph-image` (slug con slash); ahora solo valida slugs de un segmento.
+- El test de redirect lee la colección `redirects` de Mongo directo (determinista) en vez de escanear la PLP.

@@ -48,6 +48,28 @@ async function loadStock(skuList: string) {
   return available;
 }
 
+async function loadIndexableProducts() {
+  "use cache";
+  cacheLife("catalog");
+  cacheTag(tags.catalog);
+  const list = await measure("mongo", async () => (await getRepositories()).products.listActive());
+  cacheTag(
+    ...list.flatMap((product) => [
+      tags.product(product.id),
+      ...product.categoryIds.map(tags.category),
+    ]),
+  );
+  return list;
+}
+
+/** Redirect 301/308 por path `/{locale}/p/{slug}` (R32): cacheado + tag catalog. */
+async function loadRedirect(from: string) {
+  "use cache";
+  cacheLife("catalog");
+  cacheTag(tags.catalog);
+  return measure("mongo", async () => (await getRepositories()).redirects.findByFrom(from));
+}
+
 async function loadCategories() {
   "use cache";
   cacheLife("catalog");
@@ -64,6 +86,8 @@ export const getProductBySlug = cache((locale: Locale, slug: string) =>
   measure("catalog", () => loadProductBySlug(locale, slug)),
 );
 export const getCategories = cache(() => measure("catalog", loadCategories));
+export const getIndexableProducts = cache(() => measure("catalog", loadIndexableProducts));
+export const findRedirect = cache((from: string) => measure("catalog", () => loadRedirect(from)));
 
 const getStockByKey = cache((skuList: string) => measure("catalog", () => loadStock(skuList)));
 

@@ -7,6 +7,8 @@ import { Header } from "@nudo/ui/organisms/Header";
 import { Footer } from "@nudo/ui/organisms/Footer";
 import { LocaleSwitcher } from "@nudo/ui/molecules/LocaleSwitcher";
 import "@nudo/tokens/css";
+import { siteUrl } from "../../lib/seo";
+import { JsonLd, organizationJsonLd, webSiteJsonLd } from "../../lib/jsonld";
 import "../globals.scss";
 import { CartDrawer } from "./_components/CartDrawer";
 
@@ -26,7 +28,17 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = await getDictionary(locale);
-  return { title: { default: t.meta.siteName, template: `%s · ${t.meta.siteName}` } };
+  return {
+    metadataBase: new URL(siteUrl()),
+    title: { default: t.meta.siteName, template: `%s · ${t.meta.siteName}` },
+    description: t.meta.description,
+    openGraph: {
+      siteName: t.meta.siteName,
+      locale,
+      type: "website",
+    },
+    twitter: { card: "summary_large_image" },
+  };
 }
 
 function localeOptions(locale: Locale) {
@@ -46,6 +58,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   return (
     <html lang={locale} dir={dirOf(locale)} className={archivo.variable}>
       <body>
+        {/* R30: Organization + WebSite en todas las páginas del locale. */}
+        <JsonLd data={organizationJsonLd(t.meta.siteName)} />
+        <JsonLd data={webSiteJsonLd(locale, t.meta.siteName)} />
         <Header
           siteName={t.meta.siteName}
           nav={{
