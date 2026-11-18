@@ -28,7 +28,8 @@
     "catalog:invalidate": "pnpm --filter @nudo/data exec tsx scripts/catalog.ts invalidate",
     "env:secrets": "node scripts/env-secrets.mjs",
     "docker:up": "docker compose up --build -d",
-    "test:multi": "playwright test --project=multi"
+    "test:multi": "playwright test --project=multi",
+    "rendering:map": "node scripts/rendering-map.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
