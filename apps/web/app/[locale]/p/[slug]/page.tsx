@@ -44,8 +44,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PdpPage({ params, searchParams }: Props) {
-  // `connection()` difiere el render al request: HTML completo sin JS. El 404 de
-  // slugs inexistentes ya lo resolvió proxy.ts (guarda page-guard) antes del render.
+  // El render ya es por request (searchParams `?v`/`?i`); `connection()` queda
+  // como refuerzo explícito ante refactors. El 404 de slugs inexistentes ya lo
+  // resolvió proxy.ts (guarda page-guard) antes del render.
   await connection();
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();

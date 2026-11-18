@@ -32,7 +32,8 @@ export async function generateMetadata({
 }
 
 export default async function CartPage({ params }: { params: Promise<{ locale: string }> }) {
-  // `connection()` difiere el render al request: HTML completo sin JS (R15/R36).
+  // El render ya es por request (cookies() abajo); `connection()` queda como
+  // refuerzo explícito de esa intención ante refactors (R15/R36).
   // Los status reales (404/redirect) los da la guarda de proxy.ts, no la página.
   await connection();
   const { locale } = await params;

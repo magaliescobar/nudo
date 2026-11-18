@@ -28,8 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SearchPage({ params, searchParams }: Props) {
-  // `connection()` difiere el render al request: HTML completo sin JS y redirect
-  // real (307) cuando la página pedida excede pageCount.
+  // El render ya es por request (searchParams `?q`…); `connection()` queda como
+  // refuerzo explícito ante refactors. Si la página pedida excede pageCount, la
+  // página misma redirige a la última página válida.
   await connection();
   const { locale } = await params;
   if (!isLocale(locale)) notFound();

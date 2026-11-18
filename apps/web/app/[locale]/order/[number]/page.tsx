@@ -25,9 +25,9 @@ type Props = {
 };
 
 export default async function OrderPage({ params, searchParams }: Props) {
-  // `connection()` difiere el render al request. El 404 real ante token inválido
-  // ya lo resolvió proxy.ts antes del render (fail-closed); acá queda de respaldo.
-  // sin pasar por el proxy, y HTML completo para el cliente.
+  // El render ya es por request (searchParams/`?token=`); `connection()` queda
+  // como refuerzo explícito ante refactors. El 404 real ante token inválido ya
+  // lo resolvió proxy.ts antes del render (fail-closed); acá queda de respaldo.
   await connection();
   const { locale, number } = await params;
   if (!isLocale(locale)) notFound();

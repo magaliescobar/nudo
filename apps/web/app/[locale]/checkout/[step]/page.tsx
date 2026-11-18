@@ -80,8 +80,9 @@ function decodeErrors(raw: string | string[] | undefined): FieldErrors | undefin
 }
 
 export default async function CheckoutStepPage({ params, searchParams }: Props) {
-  // `connection()` difiere el render al request: HTML completo sin JS. Los guardas
-  // (404 de step, redirect de sesión vacía) ya corrieron en proxy.ts; acá son respaldo.
+  // El render ya es por request (cookies()/sesión abajo); `connection()` queda
+  // como refuerzo explícito ante refactors. Los guardas (404 de step, redirect
+  // de sesión vacía) ya corrieron en proxy.ts; acá son respaldo.
   await connection();
   const [{ locale, step }, sp] = await Promise.all([params, searchParams]);
   if (!isLocale(locale)) notFound();

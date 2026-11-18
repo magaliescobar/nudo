@@ -28,8 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {
-  // `connection()` difiere el render al request: HTML íntegro sin JS. Los status
-  // reales (404 de categoría, 307 canónico) los da la guarda de proxy.ts.
+  // El render ya es por request (searchParams de facetas/página); `connection()`
+  // queda como refuerzo explícito ante refactors. Los status reales (404 de
+  // categoría, 307 canónico) los da la guarda de proxy.ts.
   await connection();
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
