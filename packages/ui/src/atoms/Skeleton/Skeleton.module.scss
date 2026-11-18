@@ -1,0 +1,8 @@
+@use "tokens" as *;
+
+.skel {
+  @include skeleton-shimmer;
+
+  display: block;
+  border-radius: token("radius-control");
+}

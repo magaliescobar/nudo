@@ -310,6 +310,10 @@ function buildProducts(): { products: ProductDoc[]; inventory: InventoryDoc[] } 
       search: {
         colors: variants.map((v) => v.id),
         sizes: [...new Set(variants.flatMap((v) => v.skus.map((s) => s.size)))],
+        categories: [
+          idFor(`category:${category.key}`).toHexString(),
+          idFor(`category:${category.key}/${sub.key}`).toHexString(),
+        ],
         minPrice: Math.min(...prices),
         maxPrice: Math.max(...prices),
         inStock,

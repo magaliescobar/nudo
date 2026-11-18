@@ -1,0 +1,68 @@
+@use "tokens" as *;
+
+.cart {
+  max-width: token("size-container");
+  margin: 0 auto;
+  padding: token("space-lg") token("space-md") token("space-3xl");
+  display: grid;
+  gap: token("space-lg");
+
+  h1 {
+    margin: 0;
+    font-size: token("text-2xl");
+    font-weight: token("weight-heavy");
+  }
+}
+
+.layout {
+  display: grid;
+  gap: token("space-xl");
+
+  @include up("lg") {
+    grid-template-columns: 1fr 22rem;
+    align-items: start;
+  }
+}
+
+.skelLines {
+  display: grid;
+  gap: token("space-md");
+}
+
+.lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notice {
+  margin: 0 0 token("space-sm");
+  padding: token("space-sm");
+  border: token("border-thin") solid token("color-warning");
+  border-radius: token("radius-control");
+  background: token("color-warning-subtle");
+  font-size: token("text-sm");
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: token("space-md");
+}
+
+.empty {
+  display: grid;
+  gap: token("space-sm");
+  justify-items: start;
+
+  h2 {
+    margin: 0;
+    font-size: token("text-xl");
+  }
+
+  p {
+    margin: 0;
+    color: token("color-text-secondary");
+  }
+}

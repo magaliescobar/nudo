@@ -1,0 +1,30 @@
+@use "tokens" as *;
+
+.link {
+  color: token("color-text-primary");
+  text-decoration: underline;
+  text-decoration-thickness: token("border-thin");
+  text-underline-offset: 0.2em;
+  text-decoration-color: token("color-border-strong");
+  transition:
+    text-decoration-color token("motion-fast"),
+    color token("motion-fast");
+
+  &:hover {
+    color: token("color-accent");
+    text-decoration-color: token("color-accent");
+    text-decoration-thickness: token("border-thick");
+  }
+
+  &.is-quiet {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &.is-muted {
+    color: token("color-text-muted");
+  }
+}

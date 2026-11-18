@@ -4,15 +4,16 @@ import { getServerEnv } from "../env";
 
 /**
  * Pool por instancia (R02). Cada instancia Node mantiene su propio pool:
- * - maxPoolSize 10: con N instancias el cluster ve ≤ 10·N conexiones (M0/M10 aceptan 500/1500).
- *   Las páginas cacheadas casi no consultan; el pico real es checkout + facetas.
+ * - maxPoolSize 20: con N instancias el cluster ve ≤ 20·N conexiones (M0/M10 aceptan 500/1500).
+ *   Las páginas cacheadas casi no consultan; el pico real es el prerender del build y los tests
+ *   en paralelo (cada PDP abre ~3 lecturas concurrentes: producto, stock y PLP relacionada).
  * - minPoolSize 0 + maxIdleTimeMS: no retener conexiones ociosas en instancias frías.
  * - waitQueueTimeoutMS: si el pool está saturado se falla rápido en lugar de encolar sin límite.
  * - serverSelection/connect/socket timeouts explícitos: "Atlas lento" no cuelga la request.
  */
 export const mongoOptions = {
   appName: "nudo-web",
-  maxPoolSize: 10,
+  maxPoolSize: 20,
   minPoolSize: 0,
   maxIdleTimeMS: 60_000,
   waitQueueTimeoutMS: 2_000,

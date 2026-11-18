@@ -10,6 +10,7 @@
     --p-ink-800: #252F52;
     --p-ink-700: #3A4366;
     --p-ink-500: #6B7395;
+    --p-ink-600: #525A7E;
     --p-ink-300: #AEB3C8;
     --p-ink-100: #E2E4EC;
     --p-concrete-0: #FFFFFF;
@@ -174,7 +175,7 @@
     --color-surface-sunken: var(--p-concrete-200);
     --color-text-primary: var(--p-ink-900);
     --color-text-secondary: var(--p-ink-700);
-    --color-text-muted: var(--p-ink-500);
+    --color-text-muted: var(--p-ink-600);
     --color-text-inverse: var(--p-concrete-50);
     --color-border: var(--p-concrete-300);
     --color-border-strong: var(--p-ink-900);
@@ -185,7 +186,7 @@
     --color-action: var(--p-ink-900);
     --color-action-hover: var(--p-ink-800);
     --color-action-contrast: var(--p-concrete-50);
-    --color-sale: var(--p-coral-600);
+    --color-sale: var(--p-coral-700);
     --color-sale-subtle: var(--p-coral-100);
     --color-success: var(--p-green-600);
     --color-success-subtle: var(--p-green-100);

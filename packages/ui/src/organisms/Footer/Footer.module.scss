@@ -1,0 +1,44 @@
+@use "tokens" as *;
+
+.footer {
+  margin-top: token("space-3xl");
+  padding: token("space-2xl") token("space-md") token("space-lg");
+  border-top: token("border-thin") solid token("color-border");
+  background: token("color-surface");
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: token("space-xl");
+  justify-content: space-between;
+  max-width: token("size-container");
+  margin: 0 auto;
+}
+
+.brand {
+  font-weight: token("weight-heavy");
+  font-size: token("text-lg");
+  letter-spacing: token("tracking-display");
+}
+
+.tagline {
+  color: token("color-text-muted");
+  font-size: token("text-sm");
+  margin-top: token("space-2xs");
+}
+
+.links {
+  display: flex;
+  gap: token("space-md");
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.legal {
+  max-width: token("size-container");
+  margin: token("space-xl") auto 0;
+  color: token("color-text-muted");
+  font-size: token("text-xs");
+}

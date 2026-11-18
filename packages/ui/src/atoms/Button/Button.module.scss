@@ -1,0 +1,117 @@
+@use "tokens" as *;
+
+.btn {
+  --bg: var(--button-primary-bg);
+  --bg-hover: var(--button-primary-bg-hover);
+  --fg: var(--button-primary-fg);
+  --border: transparent;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: token("space-xs");
+  height: token("button-height-md");
+  padding: 0 token("space-lg");
+  background: var(--bg);
+  color: var(--fg);
+  border: token("border-thin") solid var(--border);
+  border-radius: token("button-radius");
+  font-weight: token("weight-bold");
+  font-size: token("text-sm");
+  letter-spacing: token("tracking-normal");
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  transition:
+    background-color token("motion-fast") token("ease-enter"),
+    transform token("motion-instant") token("ease-enter"),
+    color token("motion-fast");
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &.is-accent {
+    --bg: var(--button-accent-bg);
+    --bg-hover: var(--button-accent-bg-hover);
+    --fg: var(--button-accent-fg);
+  }
+
+  &.is-secondary {
+    --bg: transparent;
+    --bg-hover: var(--color-surface-sunken);
+    --fg: var(--button-secondary-fg);
+    --border: var(--button-secondary-border);
+  }
+
+  &.is-ghost {
+    --bg: transparent;
+    --bg-hover: var(--color-surface-sunken);
+    --fg: var(--color-text-primary);
+  }
+
+  &.is-sm {
+    height: token("button-height-sm");
+    padding: 0 token("space-md");
+    font-size: token("text-xs");
+  }
+
+  &.is-block {
+    width: 100%;
+  }
+
+  &.is-icon {
+    width: token("button-height-md");
+    padding: 0;
+  }
+
+  &:disabled,
+  &.disabled,
+  &[aria-disabled="true"] {
+    --bg: var(--color-surface-sunken);
+    --bg-hover: var(--color-surface-sunken);
+    --fg: var(--color-text-muted);
+    --border: transparent;
+
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  &.busy,
+  &[aria-busy="true"] {
+    color: transparent;
+    pointer-events: none;
+
+    .spinner {
+      position: absolute;
+      color: var(--fg);
+    }
+  }
+}
+
+.spinner {
+  width: token("space-md");
+  height: token("space-md");
+  border: token("border-thick") solid currentcolor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: nudo-spin token("motion-loop") linear infinite;
+}
+
+@keyframes nudo-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

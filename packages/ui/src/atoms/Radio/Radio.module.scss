@@ -1,0 +1,44 @@
+@use "tokens" as *;
+
+.radio {
+  appearance: none;
+  flex: none;
+  width: token("space-md");
+  height: token("space-md");
+  margin: 0;
+  border: token("border-thin") solid token("color-border-strong");
+  border-radius: 50%;
+  background: token("color-surface-raised");
+  cursor: pointer;
+  position: relative;
+  transition:
+    border-color token("motion-fast") token("ease-enter"),
+    box-shadow token("motion-fast") token("ease-enter");
+
+  &:hover {
+    border-color: token("color-text-primary");
+  }
+
+  &:checked {
+    border-color: token("color-action");
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: token("space-2xs");
+      border-radius: 50%;
+      background: token("color-action");
+    }
+  }
+
+  &:focus-visible {
+    outline: token("border-thick") solid token("color-focus");
+    outline-offset: token("border-thin");
+  }
+
+  &:disabled {
+    background: token("color-surface-sunken");
+    border-color: token("color-border");
+    cursor: not-allowed;
+  }
+}

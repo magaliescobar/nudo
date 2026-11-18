@@ -1,0 +1,31 @@
+@use "tokens" as *;
+
+.field {
+  display: grid;
+  gap: token("space-2xs");
+
+  label {
+    font-size: token("text-sm");
+    font-weight: token("weight-medium");
+    color: token("color-text-primary");
+  }
+}
+
+.optional {
+  margin-left: token("space-2xs");
+  font-weight: token("weight-regular");
+  color: token("color-text-muted");
+}
+
+.error {
+  display: inline-flex;
+  align-items: center;
+  gap: token("space-2xs");
+  font-size: token("text-xs");
+  color: token("color-danger");
+}
+
+.hint {
+  font-size: token("text-xs");
+  color: token("color-text-muted");
+}

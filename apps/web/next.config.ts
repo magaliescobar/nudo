@@ -52,7 +52,30 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
+    // CSP estática y cacheable (ADR 022): sin nonce para no volver dinámica la página.
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data:",
+      "connect-src 'self'",
+      "font-src 'self'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+    ].join("; ");
+    const securityHeaders = [
+      { key: "Content-Security-Policy", value: csp },
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      {
+        key: "Permissions-Policy",
+        value: "camera=(), microphone=(), geolocation=(), payment=()",
+      },
+    ];
     return [
+      { source: "/:path*", headers: securityHeaders },
       {
         // Imágenes locales del seed: nombre determinista por variante, no hasheado.
         source: "/catalog/:path*",

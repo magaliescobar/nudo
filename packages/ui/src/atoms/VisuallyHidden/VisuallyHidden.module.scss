@@ -1,5 +1,5 @@
-@use "tokens";
+@use "tokens" as *;
 
 .root {
-  @include tokens.visually-hidden;
+  @include visually-hidden;
 }

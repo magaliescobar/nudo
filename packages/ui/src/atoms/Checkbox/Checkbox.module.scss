@@ -1,0 +1,49 @@
+@use "tokens" as *;
+
+.check {
+  appearance: none;
+  flex: none;
+  width: token("space-md");
+  height: token("space-md");
+  margin: 0;
+  border: token("border-thin") solid token("color-border-strong");
+  border-radius: token("radius-control");
+  background: token("color-surface-raised");
+  cursor: pointer;
+  position: relative;
+  transition:
+    background-color token("motion-fast") token("ease-enter"),
+    border-color token("motion-fast") token("ease-enter");
+
+  &:hover {
+    border-color: token("color-text-primary");
+  }
+
+  &:checked {
+    background: token("color-action");
+    border-color: token("color-action");
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: token("color-action-contrast");
+      clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    }
+  }
+
+  &:focus-visible {
+    outline: token("border-thick") solid token("color-focus");
+    outline-offset: token("border-thin");
+  }
+
+  &:disabled {
+    background: token("color-surface-sunken");
+    border-color: token("color-border");
+    cursor: not-allowed;
+  }
+
+  &[aria-invalid="true"] {
+    border-color: var(--input-border-error);
+  }
+}

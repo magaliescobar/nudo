@@ -104,18 +104,30 @@ export type Order = {
 /** Vive en Redis. Carrito de invitado: sin `userId` ni merge al loguear (ADR 004). */
 export type Cart = {
   readonly id: string;
-  readonly lines: readonly { readonly sku: string; readonly qty: number }[];
+  /** `priceAtAdd` (centavos) permite avisar si el precio cambió desde que se agregó (R15). */
+  readonly lines: readonly {
+    readonly sku: string;
+    readonly qty: number;
+    readonly priceAtAdd?: number;
+  }[];
   readonly updatedAt: number;
 };
 
 export type CheckoutStep = "contact" | "shipping" | "delivery" | "payment" | "review";
 
-/** Vive en Redis. */
+/** Vive en Redis (privado, TTL 1 h). Los datos de tarjeta son del gateway fake: nunca salen del servidor. */
 export type CheckoutSession = {
   readonly cartId: string;
   readonly step: CheckoutStep;
   readonly contact?: { readonly email: string };
   readonly shipping?: Address;
   readonly delivery?: ShippingMethod;
+  /** Últimos datos validados del paso de pago; el PAN completo solo vive en Redis. */
+  readonly payment?: {
+    readonly method: "card";
+    readonly cardNumber: string;
+    readonly cardName: string;
+    readonly last4: string;
+  };
   readonly idempotencyKey: string;
 };

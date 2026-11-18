@@ -1,0 +1,34 @@
+@use "tokens" as *;
+
+.price {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 token("space-xs");
+  font-variant-numeric: tabular-nums;
+  font-weight: token("weight-bold");
+
+  .now {
+    color: token("color-text-primary");
+  }
+
+  del {
+    color: token("color-text-muted");
+    font-weight: token("weight-regular");
+    font-size: token("text-xs");
+  }
+
+  &.is-sale .now {
+    color: token("color-sale");
+  }
+
+  &.is-lg {
+    font-size: token("text-xl");
+  }
+
+  .off {
+    font-size: token("text-xs");
+    color: token("color-sale");
+    font-weight: token("weight-semibold");
+  }
+}

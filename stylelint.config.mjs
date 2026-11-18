@@ -1,7 +1,11 @@
 // Valor permitido para propiedades con escala: tokens, 0/auto, calc() o variables locales.
-const scaled =
-  /^(?:(?:0|auto|inherit|initial|-?tokens\.token\(["'][a-z0-9-]+["']\)|calc\(.+\)|var\(--[a-z0-9-]+\))\s*)+$/;
-const tokenOnly = /^(?:tokens\.token\(|inherit$)/;
+// La API Sass se usa como `@use "tokens" as *`, así que las llamadas llegan sin prefijo
+// (`token("space-md")`); también se acepta el nombre calificado `tokens.token(...)`.
+const tokenCall = String.raw`(?:tokens\.)?(?:token|breakpoint|motion)\([^()]*\)`;
+const scaled = new RegExp(
+  `^(?:(?:0|auto|inherit|initial|-?${tokenCall}|calc\\(.+\\)|var\\(--[a-z0-9-]+\\))\\s*)+$`,
+);
+const tokenOnly = new RegExp(`^(?:${tokenCall}|inherit$)`);
 
 /** @type {import('stylelint').Config} */
 const config = {
@@ -30,10 +34,14 @@ const config = {
     },
     "declaration-no-important": true,
     "max-nesting-depth": [3, { ignore: ["pseudo-classes"] }],
-    // Clases de CSS Modules en camelCase para usarlas como styles.foo.
+    // Clases de CSS Modules: camelCase o estados BEM `is-*`/`has-*` (se consumen
+    // con notación de corchete `styles["is-sm"]`, que CSS Modules soporta).
     "selector-class-pattern": [
-      "^[a-z][a-zA-Z0-9]*$",
-      { message: "Usá camelCase en las clases de CSS Modules (styles.miClase)." },
+      "^[a-z][a-zA-Z0-9]*(-[a-z0-9]+)*$",
+      {
+        message:
+          'Clases de CSS Modules en camelCase o kebab-case (styles.miClase / styles["is-sm"]).',
+      },
     ],
   },
   overrides: [

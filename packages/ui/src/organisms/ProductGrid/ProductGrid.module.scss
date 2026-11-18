@@ -1,0 +1,18 @@
+@use "tokens" as *;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: token("space-md");
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @include up("md") {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include up("lg") {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

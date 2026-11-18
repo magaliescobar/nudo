@@ -1,4 +1,4 @@
-@use "tokens";
+@use "tokens" as *;
 
 // Orden de capas de cascada (R07). Las custom properties llegan en la capa `tokens` (@nudo/tokens/css).
 @layer reset, tokens, base, components, utilities;
@@ -31,16 +31,16 @@
 
 @layer base {
   html {
-    font-family: tokens.token("font-body");
-    color: tokens.token("color-text-primary");
-    background: tokens.token("color-bg");
+    font-family: token("font-body");
+    color: token("color-text-primary");
+    background: token("color-bg");
     color-scheme: light;
 
     &[data-theme="dark"] {
       color-scheme: dark;
     }
 
-    @include tokens.dark-scheme {
+    @include dark-scheme {
       &[data-theme="auto"] {
         color-scheme: dark;
       }
@@ -49,23 +49,23 @@
 
   body {
     min-height: 100dvh;
-    font-size: tokens.token("text-md");
-    line-height: tokens.token("leading-body");
+    font-size: token("text-md");
+    line-height: token("leading-body");
     font-variation-settings: "wdth" 100;
   }
 
   :focus-visible {
-    @include tokens.focus-ring;
+    @include focus-ring;
   }
 
-  @include tokens.reduced-motion {
+  @include reduced-motion {
     /* stylelint-disable declaration-no-important -- prefers-reduced-motion debe ganarle a cualquier animación de componente */
     *,
     *::before,
     *::after {
-      animation-duration: tokens.token("motion-none") !important;
+      animation-duration: token("motion-none") !important;
       animation-iteration-count: 1 !important;
-      transition-duration: tokens.token("motion-none") !important;
+      transition-duration: token("motion-none") !important;
       scroll-behavior: auto !important;
     }
     /* stylelint-enable declaration-no-important */
@@ -83,7 +83,14 @@
 
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: tokens.token("motion-slow");
-    animation-timing-function: tokens.token("ease-move");
+    animation-duration: token("motion-slow");
+    animation-timing-function: token("ease-move");
+  }
+}
+
+@layer utilities {
+  /* Utilidad global de "solo lectores de pantalla" (la usan los componentes). */
+  .vh {
+    @include visually-hidden;
   }
 }

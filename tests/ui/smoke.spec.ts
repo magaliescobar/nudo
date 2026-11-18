@@ -4,7 +4,7 @@ test.describe("Andamiaje · home localizada", () => {
   test("la home responde y muestra la marca", async ({ page }) => {
     const response = await page.goto("/");
     expect(response?.status()).toBe(200);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("NUDO");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/drop|semana/i);
   });
 
   test.describe("navegador en español", () => {

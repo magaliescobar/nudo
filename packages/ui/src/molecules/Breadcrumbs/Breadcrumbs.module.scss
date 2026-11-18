@@ -1,0 +1,23 @@
+@use "tokens" as *;
+
+.crumbs {
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: token("space-2xs");
+    list-style: none;
+    font-size: token("text-sm");
+    color: token("color-text-muted");
+  }
+
+  li + li::before {
+    content: "/";
+    margin-right: token("space-2xs");
+    color: token("color-border-strong");
+  }
+
+  [aria-current="page"] {
+    color: token("color-text-primary");
+  }
+}

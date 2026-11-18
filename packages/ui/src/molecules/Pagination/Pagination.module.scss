@@ -1,0 +1,53 @@
+@use "tokens" as *;
+
+.pager {
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: token("space-2xs");
+    list-style: none;
+  }
+
+  a,
+  .current,
+  .edge,
+  .gap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: token("space-2xs");
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 token("space-xs");
+    border-radius: token("radius-control");
+    font-size: token("text-sm");
+    font-weight: token("weight-semibold");
+    color: token("color-text-primary");
+    text-decoration: none;
+  }
+
+  a:hover {
+    background: token("color-surface-sunken");
+  }
+
+  .current {
+    background: token("color-action");
+    color: token("color-action-contrast");
+  }
+
+  .edge {
+    border: token("border-thin") solid token("color-border-strong");
+  }
+
+  .is-disabled {
+    color: token("color-text-muted");
+    border-color: token("color-border");
+    cursor: not-allowed;
+  }
+
+  .gap {
+    color: token("color-text-muted");
+  }
+}

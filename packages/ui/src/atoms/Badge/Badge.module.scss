@@ -1,0 +1,51 @@
+@use "tokens" as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: token("space-2xs");
+  font-size: token("text-xs");
+  font-weight: token("weight-bold");
+  line-height: 1;
+  padding: token("space-2xs") token("space-xs");
+  border-radius: token("radius-control");
+  background: token("color-surface-sunken");
+  color: token("color-text-primary");
+
+  &.is-new {
+    background: var(--badge-new-bg);
+    color: var(--badge-new-fg);
+  }
+
+  &.is-sale {
+    background: var(--badge-sale-bg);
+    color: var(--badge-sale-fg);
+  }
+
+  &.is-low {
+    background: token("color-warning-subtle");
+    color: token("color-warning");
+  }
+
+  &.is-out {
+    background: transparent;
+    color: token("color-text-muted");
+    border: token("border-thin") solid token("color-border");
+  }
+
+  &.is-discontinued {
+    background: token("color-surface-sunken");
+    color: token("color-text-muted");
+    border: token("border-thin") solid token("color-border");
+  }
+
+  &.is-count {
+    min-width: 1.2rem;
+    height: 1.2rem;
+    padding: 0 token("space-2xs");
+    justify-content: center;
+    border-radius: token("radius-pill");
+    background: token("color-accent");
+    color: token("color-accent-contrast");
+  }
+}

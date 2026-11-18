@@ -1,0 +1,46 @@
+# rendering map — ea1acb3 — 2026-11-18T19:00:44.319Z
+# Regenerar: pnpm rendering:map · leyenda: ○ estático · ◐ partial prerender · ƒ dinámico
+Route (app)
+┌ ○ /_not-found
+├   /[locale]
+│ ├ ◐ /[locale]
+│ ├ ◐ /es
+│ └ ◐ /en
+├   /[locale]/c/[...slug]
+│ ├ ◐ /[locale]/c/[...slug]
+│ ├ ◐ /es/c/[...slug]
+│ └ ◐ /en/c/[...slug]
+├   /[locale]/cart
+│ ├ ƒ /[locale]/cart
+│ ├ ƒ /es/cart
+│ └ ƒ /en/cart
+├   /[locale]/checkout/[step]
+│ ├ ◐ /[locale]/checkout/[step]
+│ ├ ◐ /es/checkout/[step]
+│ └ ◐ /en/checkout/[step]
+├   /[locale]/order/[number]
+│ ├ ◐ /[locale]/order/[number]
+│ ├ ◐ /es/order/[number]
+│ └ ◐ /en/order/[number]
+├   /[locale]/p/[slug]
+│ ├ ◐ /[locale]/p/[slug]
+│ ├ ◐ /es/p/[slug]
+│ └ ◐ /en/p/[slug]
+├   /[locale]/search
+│ ├ ƒ /[locale]/search
+│ ├ ƒ /es/search
+│ └ ƒ /en/search
+├ ƒ /api/health
+├ ƒ /api/internal/invalidate
+├ ƒ /api/internal/order-access
+├ ƒ /api/internal/page-guard
+├ ƒ /api/internal/stats
+├ ƒ /api/plp
+└ ƒ /api/products/[id]
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)             prerendered as static content
+◐  (Partial Prerender)  prerendered as static HTML with dynamic server-streamed content
+ƒ  (Dynamic)            server-rendered on demand

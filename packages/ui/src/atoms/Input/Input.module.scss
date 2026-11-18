@@ -1,0 +1,36 @@
+@use "tokens" as *;
+
+.input {
+  width: 100%;
+  height: token("input-height");
+  padding: 0 token("space-sm");
+  background: var(--input-bg);
+  border: token("border-thin") solid var(--input-border);
+  border-radius: token("input-radius");
+  color: token("color-text-primary");
+  transition: border-color token("motion-fast") token("ease-enter");
+
+  &::placeholder {
+    color: token("color-text-muted");
+  }
+
+  &:hover {
+    border-color: token("color-border-strong");
+  }
+
+  &:focus-visible {
+    border-color: var(--input-border-focus);
+    outline: token("border-thick") solid token("color-focus");
+    outline-offset: token("border-thin");
+  }
+
+  &:disabled {
+    background: token("color-surface-sunken");
+    color: token("color-text-muted");
+    cursor: not-allowed;
+  }
+
+  &.is-error {
+    border-color: var(--input-border-error);
+  }
+}

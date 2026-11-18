@@ -28,6 +28,8 @@ export type ProductDoc = Omit<Mutable<Product>, "id" | "categoryIds" | "variants
   search: {
     colors: string[];
     sizes: string[];
+    /** Ids de categoría (hex) de los que participa el producto: padre + hoja. */
+    categories: string[];
     minPrice: number;
     maxPrice: number;
     inStock: boolean;
