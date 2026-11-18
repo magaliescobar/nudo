@@ -1,0 +1,43 @@
+@use "tokens" as *;
+
+.group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+
+  legend {
+    padding: 0;
+    margin-bottom: token("space-xs");
+    font-size: token("text-sm");
+    color: token("color-text-secondary");
+  }
+}
+
+.opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(token("swatch-gap") + token("space-2xs"));
+  padding: token("space-2xs");
+}
+
+.swatchBtn,
+.swatchStatic {
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: 50%;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: token("border-thick") solid token("color-focus");
+    outline-offset: token("border-thick");
+  }
+}
+
+.is-compact .opts {
+  gap: token("space-2xs");
+}

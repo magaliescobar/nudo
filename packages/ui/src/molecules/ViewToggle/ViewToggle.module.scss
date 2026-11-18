@@ -1,0 +1,11 @@
+@use "tokens" as *;
+
+.toggle {
+  display: inline-flex;
+  gap: token("space-2xs");
+
+  a[aria-current="true"] {
+    font-weight: token("weight-bold");
+    text-decoration: underline;
+  }
+}

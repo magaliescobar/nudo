@@ -1,0 +1,30 @@
+@use "tokens" as *;
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: token("space-xs");
+}
+
+.dots {
+  width: token("space-md");
+  height: token("space-md");
+  border: token("border-thick") solid currentcolor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: nudo-spin token("motion-loop") linear infinite;
+}
+
+@keyframes nudo-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dots {
+    animation: none;
+    border-top-color: currentcolor;
+    opacity: 0.5;
+  }
+}

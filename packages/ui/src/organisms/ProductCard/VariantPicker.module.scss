@@ -1,0 +1,29 @@
+@use "tokens" as *;
+
+.media {
+  position: relative;
+  aspect-ratio: var(--card-media-ratio);
+  background: var(--card-media-bg);
+  overflow: hidden;
+  border-radius: token("card-radius") token("card-radius") 0 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.noImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: token("color-skeleton");
+}
+
+.price {
+  margin: 0;
+  font-weight: token("weight-bold");
+  font-size: token("text-sm");
+  font-variant-numeric: tabular-nums;
+}

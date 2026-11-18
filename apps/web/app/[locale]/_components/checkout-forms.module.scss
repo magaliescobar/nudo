@@ -1,0 +1,53 @@
+@use "tokens" as *;
+
+.form {
+  display: grid;
+  gap: token("space-md");
+}
+
+.row {
+  display: grid;
+  gap: token("space-md");
+
+  @include up("sm") {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.methods {
+  display: grid;
+  gap: token("space-sm");
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.method {
+  display: flex;
+  gap: token("space-sm");
+  align-items: center;
+  padding: token("space-sm");
+  border: token("border-thin") solid token("color-border");
+  border-radius: token("radius-control");
+  cursor: pointer;
+
+  &:has(input:checked) {
+    border-color: token("color-action");
+    background: token("color-accent-subtle");
+  }
+}
+
+.fieldError {
+  font-size: token("text-xs");
+  color: token("color-danger");
+}
+
+.formError {
+  margin: 0;
+  padding: token("space-sm");
+  border: token("border-thin") solid token("color-danger");
+  border-radius: token("radius-control");
+  background: token("color-danger-subtle");
+  color: token("color-danger");
+  font-size: token("text-sm");
+}

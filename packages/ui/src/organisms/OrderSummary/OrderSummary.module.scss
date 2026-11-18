@@ -1,0 +1,109 @@
+@use "tokens";
+
+.summary {
+  display: grid;
+  gap: token("space-md");
+  padding: token("space-md");
+  background: token("color-surface-raised");
+  border: token("border-thin") solid token("color-border");
+  border-radius: token("radius-panel");
+}
+
+.title {
+  margin: 0;
+  font-size: token("text-lg");
+  font-weight: token("weight-bold");
+}
+
+.empty {
+  margin: 0;
+  color: token("color-text-muted");
+  font-size: token("text-sm");
+}
+
+.lines {
+  display: grid;
+  gap: token("space-sm");
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 3rem 1fr auto;
+  gap: token("space-sm");
+  align-items: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: token("radius-control");
+  }
+}
+
+.lineBody {
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-size: token("text-sm");
+  font-weight: token("weight-semibold");
+}
+
+.variant {
+  margin: 0;
+  font-size: token("text-xs");
+  color: token("color-text-muted");
+}
+
+.price {
+  font-size: token("text-sm");
+  font-weight: token("weight-bold");
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.totals {
+  display: grid;
+  gap: token("space-2xs");
+  margin: 0;
+  padding-top: token("space-sm");
+  border-top: token("border-thin") solid token("color-border");
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    font-size: token("text-sm");
+  }
+
+  dt {
+    color: token("color-text-secondary");
+  }
+
+  dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.totals .grand {
+  font-weight: token("weight-bold");
+  font-size: token("text-md");
+
+  dt {
+    color: token("color-text-primary");
+  }
+}
+
+.compact {
+  .line {
+    grid-template-columns: 1fr auto;
+  }
+
+  .lineBody {
+    display: contents;
+  }
+}

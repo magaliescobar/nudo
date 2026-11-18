@@ -1,0 +1,36 @@
+@use "tokens" as *;
+
+.checkout {
+  max-width: token("size-container");
+  margin: 0 auto;
+  padding: token("space-lg") token("space-md") token("space-3xl");
+  display: grid;
+  gap: token("space-lg");
+}
+
+.head {
+  display: grid;
+  gap: token("space-md");
+
+  h1 {
+    margin: 0;
+    font-size: token("text-2xl");
+    font-weight: token("weight-heavy");
+  }
+}
+
+.stepTitle {
+  margin: 0 0 token("space-lg");
+  font-size: token("text-xl");
+  font-weight: token("weight-bold");
+}
+
+.layout {
+  display: grid;
+  gap: token("space-xl");
+  align-items: start;
+
+  @include up("lg") {
+    grid-template-columns: 1fr 22rem;
+  }
+}

@@ -16,11 +16,17 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
+    "next": "16.4.6",
     "react": "^19"
   },
   "devDependencies": {
     "@nudo/config": "workspace:*",
     "@types/react": "^19",
+    "next": "16.4.6",
     "react": "19.3.0"
+  },
+  "dependencies": {
+    "@nudo/commerce": "workspace:*",
+    "@nudo/i18n": "workspace:*"
   }
 }

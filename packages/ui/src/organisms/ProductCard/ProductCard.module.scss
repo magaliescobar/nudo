@@ -1,0 +1,73 @@
+@use "tokens" as *;
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: token("card-bg");
+  border: token("border-thin") solid token("color-border");
+  border-radius: token("card-radius");
+  box-shadow: token("shadow-raised");
+  overflow: hidden;
+  transition:
+    transform token("motion-base") token("ease-enter"),
+    box-shadow token("motion-base") token("ease-enter");
+
+  &:hover {
+    transform: translateY(calc(-1 * token("space-2xs")));
+    box-shadow: token("shadow-overlay");
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.mediaWrap {
+  position: relative;
+}
+
+.badges {
+  position: absolute;
+  top: token("space-xs");
+  left: token("space-xs");
+  display: flex;
+  flex-direction: column;
+  gap: token("space-2xs");
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.body {
+  display: grid;
+  gap: token("space-2xs");
+  padding: token("space-xs") token("space-sm") token("space-sm");
+}
+
+.brand {
+  margin: 0;
+  font-size: token("text-xs");
+  font-weight: token("weight-bold");
+  letter-spacing: token("tracking-caps");
+  text-transform: uppercase;
+  color: token("color-text-muted");
+}
+
+.name {
+  color: token("color-text-primary");
+  text-decoration: none;
+  font-weight: token("weight-semibold");
+
+  &:hover {
+    color: token("color-accent");
+  }
+
+  &:focus-visible {
+    outline: token("border-thick") solid token("color-focus");
+    outline-offset: token("border-thin");
+    border-radius: token("radius-control");
+  }
+}

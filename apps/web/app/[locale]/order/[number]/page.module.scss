@@ -1,0 +1,80 @@
+@use "tokens" as *;
+
+.order {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: token("space-3xl") token("space-md");
+  display: grid;
+  gap: token("space-lg");
+  justify-items: start;
+
+  h1 {
+    margin: 0;
+    font-size: token("text-2xl");
+    font-weight: token("weight-heavy");
+  }
+}
+
+.number {
+  margin: 0;
+  font-size: token("text-lg");
+}
+
+.meta {
+  margin: 0;
+  color: token("color-text-secondary");
+  font-size: token("text-sm");
+}
+
+.card {
+  width: 100%;
+  padding: token("space-md");
+  border: token("border-thin") solid token("color-border");
+  border-radius: token("radius-panel");
+  background: token("color-surface-raised");
+
+  ul {
+    list-style: none;
+    margin: 0 0 token("space-md");
+    padding: 0;
+    display: grid;
+    gap: token("space-sm");
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      gap: token("space-md");
+      font-size: token("text-sm");
+    }
+  }
+
+  dl {
+    margin: 0;
+    display: grid;
+    gap: token("space-2xs");
+    padding-top: token("space-sm");
+    border-top: token("border-thin") solid token("color-border");
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      font-size: token("text-sm");
+    }
+
+    dt {
+      color: token("color-text-secondary");
+    }
+
+    dd {
+      margin: 0;
+    }
+  }
+}
+
+.total {
+  font-weight: token("weight-bold");
+
+  dt {
+    color: token("color-text-primary");
+  }
+}

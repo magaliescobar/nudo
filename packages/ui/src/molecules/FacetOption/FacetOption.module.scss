@@ -1,0 +1,70 @@
+@use "tokens" as *;
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: token("space-xs");
+  padding: token("space-2xs") 0;
+  color: token("color-text-primary");
+  text-decoration: none;
+  font-size: token("text-sm");
+  border-radius: token("radius-control");
+  transition: color token("motion-fast") token("ease-enter");
+
+  &:hover {
+    color: token("color-accent");
+  }
+
+  &:focus-visible {
+    outline: token("border-thick") solid token("color-focus");
+    outline-offset: token("border-thin");
+  }
+}
+
+.check {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: token("space-md");
+  height: token("space-md");
+  border: token("border-thin") solid token("color-border-strong");
+  border-radius: token("radius-control");
+  background: token("color-surface-raised");
+  color: token("color-action-contrast");
+  transition:
+    background-color token("motion-fast") token("ease-enter"),
+    border-color token("motion-fast") token("ease-enter");
+}
+
+.is-checked .check {
+  background: token("color-action");
+  border-color: token("color-action");
+}
+
+.is-disabled {
+  color: token("color-text-muted");
+  cursor: not-allowed;
+
+  .check {
+    background: token("color-surface-sunken");
+    border-color: token("color-border");
+  }
+
+  .label {
+    text-decoration: line-through;
+  }
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+
+  @include truncate(1);
+}
+
+.count {
+  flex: none;
+  font-size: token("text-xs");
+  color: token("color-text-muted");
+  font-variant-numeric: tabular-nums;
+}

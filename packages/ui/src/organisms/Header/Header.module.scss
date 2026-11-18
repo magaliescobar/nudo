@@ -1,0 +1,63 @@
+@use "tokens" as *;
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: token("layer-sticky");
+  background: token("color-bg");
+  border-bottom: token("border-thin") solid token("color-border");
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  gap: token("space-lg");
+  max-width: token("size-container");
+  height: token("size-header");
+  margin: 0 auto;
+  padding: 0 token("space-md");
+}
+
+.brand {
+  font-weight: token("weight-heavy");
+  font-size: token("text-lg");
+  letter-spacing: token("tracking-display");
+  text-decoration: none;
+  color: token("color-text-primary");
+}
+
+.nav {
+  display: none;
+  gap: token("space-md");
+
+  @include up("md") {
+    display: flex;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: token("space-2xs");
+  margin-left: auto;
+}
+
+.iconBtn {
+  display: inline-grid;
+  place-items: center;
+  width: token("button-height-md");
+  height: token("button-height-md");
+  border-radius: token("radius-control");
+  color: token("color-text-primary");
+  text-decoration: none;
+  position: relative;
+
+  &:hover {
+    background: token("color-surface-sunken");
+  }
+
+  &:focus-visible {
+    outline: token("border-thick") solid token("color-focus");
+    outline-offset: token("border-thin");
+  }
+}

@@ -5,6 +5,7 @@ import { createInventoryRepository } from "./repositories/inventory";
 import { createOrderRepository } from "./repositories/orders";
 import { createProductRepository } from "./repositories/products";
 import { createRedirectRepository } from "./repositories/redirects";
+import { createSearchRepository } from "./repositories/search";
 
 /** Repositorios ligados al cliente singleton. Punto de entrada para Server Components y Actions. */
 export async function getRepositories() {
@@ -15,5 +16,6 @@ export async function getRepositories() {
     categories: createCategoryRepository(db),
     orders: createOrderRepository(db),
     redirects: createRedirectRepository(db),
+    search: createSearchRepository(db),
   };
 }

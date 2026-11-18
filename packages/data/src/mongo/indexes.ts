@@ -67,6 +67,7 @@ export const searchIndexDefinition = {
         fields: {
           colors: [{ type: "token" }, { type: "stringFacet" }],
           sizes: [{ type: "token" }, { type: "stringFacet" }],
+          categories: [{ type: "token" }, { type: "stringFacet" }],
           minPrice: [{ type: "number" }, { type: "numberFacet" }],
           maxPrice: { type: "number" },
           inStock: { type: "boolean" },

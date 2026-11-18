@@ -1,0 +1,38 @@
+@use "tokens" as *;
+
+.step {
+  display: grid;
+  gap: token("space-lg");
+}
+
+.title {
+  margin: 0;
+  font-size: token("text-2xl");
+  font-weight: token("weight-heavy");
+}
+
+.form {
+  display: grid;
+  gap: token("space-md");
+}
+
+.errors {
+  padding: token("space-sm") token("space-md");
+  border: token("border-thin") solid token("color-danger");
+  border-radius: token("radius-control");
+  background: token("color-danger-subtle");
+  color: token("color-danger");
+
+  ul {
+    margin: 0;
+    padding-left: token("space-md");
+    font-size: token("text-sm");
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: token("space-md");
+}

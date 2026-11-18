@@ -1,0 +1,37 @@
+@use "tokens" as *;
+
+.stepper {
+  display: inline-flex;
+  align-items: stretch;
+  border: token("border-thin") solid token("color-border-strong");
+  border-radius: token("radius-control");
+  overflow: hidden;
+  height: token("button-height-md");
+
+  button {
+    display: grid;
+    place-items: center;
+    width: token("button-height-md");
+    color: token("color-text-primary");
+    cursor: pointer;
+    transition: background-color token("motion-fast") token("ease-enter");
+
+    &:hover:not(:disabled) {
+      background: token("color-surface-sunken");
+    }
+
+    &:disabled {
+      color: token("color-text-muted");
+      cursor: not-allowed;
+    }
+  }
+
+  output {
+    display: grid;
+    place-items: center;
+    min-width: 2.5rem;
+    padding: 0 token("space-xs");
+    font-weight: token("weight-semibold");
+    font-variant-numeric: tabular-nums;
+  }
+}

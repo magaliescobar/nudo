@@ -1,0 +1,114 @@
+@use "tokens" as *;
+
+.line {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  gap: token("space-sm");
+  padding: token("space-sm") 0;
+  border-bottom: token("border-thin") solid token("color-border");
+}
+
+.media {
+  aspect-ratio: 1;
+  border-radius: token("radius-control");
+  overflow: hidden;
+  background: token("color-surface-sunken");
+  display: block;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.noImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: token("color-skeleton");
+}
+
+.details {
+  display: grid;
+  gap: token("space-2xs");
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  gap: token("space-sm");
+  align-items: flex-start;
+}
+
+.brand {
+  margin: 0;
+  font-size: token("text-xs");
+  font-weight: token("weight-bold");
+  letter-spacing: token("tracking-caps");
+  text-transform: uppercase;
+  color: token("color-text-muted");
+}
+
+.name {
+  color: token("color-text-primary");
+  text-decoration: none;
+  font-weight: token("weight-semibold");
+}
+
+.variant {
+  margin: token("space-2xs") 0 0;
+  font-size: token("text-sm");
+  color: token("color-text-secondary");
+}
+
+.total {
+  margin: 0;
+  font-weight: token("weight-bold");
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: token("space-xs");
+  align-items: center;
+}
+
+.unit {
+  margin: 0;
+  font-size: token("text-sm");
+  color: token("color-text-secondary");
+  display: inline-flex;
+  gap: token("space-2xs");
+  align-items: center;
+}
+
+.stockWarn {
+  margin: 0;
+  font-size: token("text-xs");
+  color: token("color-danger");
+  display: inline-flex;
+  gap: token("space-2xs");
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: token("space-sm");
+  align-items: center;
+  margin-top: token("space-2xs");
+}
+
+.qtyForm {
+  display: inline-flex;
+  gap: token("space-2xs");
+  align-items: center;
+}
+
+.qtyStatic {
+  font-weight: token("weight-semibold");
+}

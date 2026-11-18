@@ -1,0 +1,19 @@
+@use "tokens" as *;
+
+.selector {
+  display: grid;
+  gap: token("space-md");
+}
+
+.buyRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: token("space-sm");
+  flex-wrap: wrap;
+}
+
+.form {
+  display: grid;
+  gap: token("space-sm");
+}

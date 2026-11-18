@@ -1,0 +1,51 @@
+@use "tokens" as *;
+
+.steps {
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: token("space-md");
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    font-size: token("text-sm");
+    color: token("color-text-muted");
+    position: relative;
+    padding-left: token("space-lg");
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: calc(50%);
+      translate: 0 -50%;
+      width: token("space-sm");
+      height: token("space-sm");
+      border-radius: 50%;
+      border: token("border-thin") solid token("color-border-strong");
+      background: token("color-surface-raised");
+    }
+
+    &[aria-current="step"] {
+      color: token("color-text-primary");
+      font-weight: token("weight-semibold");
+
+      &::before {
+        background: token("color-action");
+        border-color: token("color-action");
+      }
+    }
+
+    &.is-done {
+      color: token("color-text-secondary");
+
+      &::before {
+        background: token("color-success");
+        border-color: token("color-success");
+      }
+    }
+  }
+}

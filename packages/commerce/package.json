@@ -6,7 +6,12 @@
   "sideEffects": false,
   "exports": {
     "./money": "./src/money.ts",
-    "./catalog": "./src/catalog.ts"
+    "./catalog": "./src/catalog.ts",
+    "./cart": "./src/cart.ts",
+    "./card": "./src/card.ts",
+    "./checkout": "./src/checkout.ts",
+    "./schemas": "./src/schemas.ts",
+    "./colors": "./src/colors.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
@@ -16,6 +21,7 @@
     "@types/node": "^20"
   },
   "dependencies": {
-    "@nudo/i18n": "workspace:*"
+    "@nudo/i18n": "workspace:*",
+    "valibot": "^1.5.0"
   }
 }

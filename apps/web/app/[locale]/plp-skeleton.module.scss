@@ -1,0 +1,50 @@
+@use "tokens" as *;
+
+.plpSkel {
+  max-width: token("size-container");
+  margin: 0 auto;
+  padding: token("space-lg") token("space-md") token("space-3xl");
+  display: grid;
+  gap: token("space-lg");
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: token("space-md");
+}
+
+.body {
+  display: grid;
+  gap: token("space-xl");
+
+  @include up("lg") {
+    grid-template-columns: 16rem 1fr;
+  }
+}
+
+.facets {
+  display: grid;
+  gap: token("space-sm");
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: token("space-md");
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @include up("md") {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include up("lg") {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  li {
+    aspect-ratio: var(--card-media-ratio, 4 / 5);
+  }
+}

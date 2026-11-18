@@ -1,0 +1,64 @@
+@use "tokens" as *;
+
+.group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+
+  legend {
+    padding: 0;
+    margin-bottom: token("space-xs");
+    font-size: token("text-sm");
+    color: token("color-text-secondary");
+  }
+}
+
+.opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: token("space-xs");
+}
+
+.option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0 token("space-sm");
+  border: token("border-thin") solid token("color-border-strong");
+  border-radius: token("radius-control");
+  font-weight: token("weight-semibold");
+  font-size: token("text-sm");
+  cursor: pointer;
+  transition:
+    background-color token("motion-fast") token("ease-enter"),
+    border-color token("motion-fast") token("ease-enter"),
+    color token("motion-fast") token("ease-enter");
+
+  &:has(input:checked) {
+    background: token("color-action");
+    border-color: token("color-action");
+    color: token("color-action-contrast");
+  }
+
+  &:has(input:focus-visible) {
+    outline: token("border-thick") solid token("color-focus");
+    outline-offset: token("border-thin");
+  }
+
+  &:has(input:disabled) {
+    color: token("color-text-muted");
+    border-color: token("color-border");
+    background: token("color-surface-sunken");
+    cursor: not-allowed;
+    text-decoration: line-through;
+    text-decoration-color: token("color-text-muted");
+  }
+
+  input {
+    @include visually-hidden;
+  }
+}

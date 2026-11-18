@@ -1,0 +1,19 @@
+@use "tokens" as *;
+
+.range {
+  display: grid;
+  gap: token("space-xs");
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: token("space-xs");
+}
+
+.field {
+  display: grid;
+  gap: token("space-2xs");
+  font-size: token("text-xs");
+  color: token("color-text-secondary");
+}

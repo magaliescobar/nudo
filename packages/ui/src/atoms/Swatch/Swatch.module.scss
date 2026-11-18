@@ -1,0 +1,64 @@
+@use "tokens" as *;
+
+.swatch {
+  --swatch-size: 1.75rem;
+
+  display: inline-grid;
+  place-items: center;
+  width: var(--swatch-size);
+  height: var(--swatch-size);
+  flex: none;
+  border-radius: 50%;
+  background: var(--c);
+  cursor: pointer;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: calc(token("space-2xs") * -1);
+    border: token("border-thin") solid transparent;
+    border-radius: 50%;
+    transition: border-color token("motion-fast") token("ease-enter");
+  }
+
+  &:hover {
+    &::after {
+      border-color: var(--color-border-strong);
+    }
+  }
+
+  &[aria-checked="true"],
+  &.is-selected {
+    &::after {
+      border-color: var(--swatch-ring);
+      border-width: token("border-thick");
+    }
+  }
+
+  &.is-out {
+    opacity: 0.45;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(
+        to top right,
+        transparent calc(50% - token("border-thin")),
+        token("color-text-muted") calc(50% - token("border-thin")),
+        token("color-text-muted") calc(50% + token("border-thin")),
+        transparent calc(50% + token("border-thin"))
+      );
+    }
+  }
+
+  &.is-sm {
+    --swatch-size: 1rem;
+
+    &::after {
+      inset: calc(token("radius-control") * -1.5);
+    }
+  }
+}
