@@ -18,6 +18,28 @@ Commerce urbano ES/EN con Next.js 16 (App Router, Turbopack, Cache Components), 
 | `pnpm --filter @nudo/tokens build` | Regenera `css/tokens.css` y `scss/_generated.scss` desde `packages/tokens/src/tokens.ts`                                                                 |
 | `pnpm check`                       | Formato, ESLint, Stylelint, typecheck, build y tests Playwright                                                                                          |
 
+## Multi-instancia (R04)
+
+Tres instancias de la misma imagen detrás de nginx, compartiendo Redis y Mongo externos:
+
+```bash
+docker compose up --build   # → http://localhost:8080
+curl -I http://localhost:8080/es   # x-instance-id indica qué instancia respondió
+```
+
+`docker compose kill web-2` degrada a 2 instancias sin cortar el servicio. Las variables vienen de `.env.local` (no se crean Mongo/Redis nuevos). Detalles: ADR 007/008 y `tests/multi/`.
+
+## Tests y evidencias
+
+- `pnpm check` corre la suite completa (Playwright: api, ui chromium/mobile/no-js, a11y); los specs `tests/multi/` requieren el compose levantado (`MULTI_BASE_URL`).
+- Presupuestos de bundle por ruta: `node scripts/bundle-budget.mjs` (con `pnpm start` corriendo) y CI en `tests/api/phase5-bundle.spec.ts`. Drill-down: `pnpm -C apps/web analyze` (Turbopack).
+- Web Vitals RUM: `node scripts/vitals-report.mjs` (p75 por métrica×página desde `/api/vitals`). Lighthouse: `node scripts/lighthouse.mjs` → `docs/perf/lighthouse/`.
+- Reportes y medidas: `docs/perf/` (`R34-bundle.md`, `R23-view-transitions.md`), `docs/rendering-matrix.md`, `docs/caching.md`, `QUALITY.md`.
+
+## Deploy en Vercel
+
+Ver `docs/deploy-vercel.md`: mismas variables (`MONGODB_URI`, `REDIS_URL` — mapear `KV_URL` si la integración la inyecta), `SITE_URL` (server-only), `REDIS_DRIVER`/`CACHE_L1_PUBSUB=false`, y qué requerimientos solo se demuestran en Docker (R04).
+
 ## Documentación
 
 - Avance por fase: `docs/PROGRESS.md`

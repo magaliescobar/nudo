@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ViewTransition } from "react";
 import type { ReactNode } from "react";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
@@ -115,36 +116,44 @@ export default async function CheckoutStepPage({ params, searchParams }: Props) 
   const shipping = session.delivery ? totals(view.subtotal, session.delivery).shipping : undefined;
 
   return (
-    <div className={styles.checkout}>
-      <header className={styles.head}>
-        <h1>{t.checkout.title}</h1>
-        <StepIndicator steps={steps} label={t.checkout.title} />
-      </header>
-      <div className={styles.layout}>
-        <section aria-label={stepLabel}>
-          <h2 className={styles.stepTitle}>{stepLabel}</h2>
-          {stepForms[current]({
-            locale,
-            t,
-            errors: decodeErrors(sp.e),
-            error: Array.isArray(sp.error) ? sp.error[0] : sp.error,
-          })}
-        </section>
-        <OrderSummary
-          locale={locale}
-          cart={view}
-          shipping={shipping}
-          shippingLabel={t.checkout.summary.shipping}
-          labels={{
-            title: t.checkout.review.summary,
-            subtotal: t.checkout.summary.subtotal,
-            shipping: t.checkout.summary.shipping,
-            total: t.checkout.summary.total,
-            each: "c/u",
-            empty: t.cart.empty.title,
-          }}
-        />
+    // Slide horizontal entre pasos (R23): dirección distinta al catálogo (morph/crossfade);
+    // el exit desliza a la izquierda y el enter llega desde la derecha.
+    <ViewTransition
+      enter={{ default: "vt-slide-in" }}
+      exit={{ default: "vt-slide-out" }}
+      default="none"
+    >
+      <div className={styles.checkout}>
+        <header className={styles.head}>
+          <h1>{t.checkout.title}</h1>
+          <StepIndicator steps={steps} label={t.checkout.title} />
+        </header>
+        <div className={styles.layout}>
+          <section aria-label={stepLabel}>
+            <h2 className={styles.stepTitle}>{stepLabel}</h2>
+            {stepForms[current]({
+              locale,
+              t,
+              errors: decodeErrors(sp.e),
+              error: Array.isArray(sp.error) ? sp.error[0] : sp.error,
+            })}
+          </section>
+          <OrderSummary
+            locale={locale}
+            cart={view}
+            shipping={shipping}
+            shippingLabel={t.checkout.summary.shipping}
+            labels={{
+              title: t.checkout.review.summary,
+              subtotal: t.checkout.summary.subtotal,
+              shipping: t.checkout.summary.shipping,
+              total: t.checkout.summary.total,
+              each: "c/u",
+              empty: t.cart.empty.title,
+            }}
+          />
+        </div>
       </div>
-    </div>
+    </ViewTransition>
   );
 }

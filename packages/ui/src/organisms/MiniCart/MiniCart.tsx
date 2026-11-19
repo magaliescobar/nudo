@@ -4,7 +4,7 @@
 // del first load; se precarga en hover/focus del trigger para abrir sin lag.
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, ViewTransition } from "react";
 import dynamic from "next/dynamic";
 import type { CartView } from "@nudo/commerce/cart";
 import type { Locale } from "@nudo/i18n/config";
@@ -75,7 +75,12 @@ export function MiniCart({
       >
         <Icon name="cart" />
         <span className="vh">{labels.title}</span>
-        {cart.itemCount > 0 && <span className={styles.count}>{cart.itemCount}</span>}
+        {/* Microinteracción R23: el contador pulsa cuando una Server Action actualiza el carrito. */}
+        {cart.itemCount > 0 && (
+          <ViewTransition update="vt-pulse" default="none">
+            <span className={styles.count}>{cart.itemCount}</span>
+          </ViewTransition>
+        )}
       </button>
       {open && (
         <div className={styles.overlay} onClick={() => setOpen(false)}>

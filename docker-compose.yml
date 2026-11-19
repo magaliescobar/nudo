@@ -9,7 +9,7 @@ x-web-env: &web-env
   REDIS_DRIVER: tcp
   CACHE_L1_PUBSUB: "true"
   NEXT_DEPLOYMENT_ID: ${NEXT_DEPLOYMENT_ID:-local}
-  NEXT_PUBLIC_SITE_URL: http://localhost:8080
+  SITE_URL: http://localhost:8080
 
 x-web: &web
   image: nudo-web:${NEXT_DEPLOYMENT_ID:-local}

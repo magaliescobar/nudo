@@ -1,6 +1,7 @@
 // Galería del PDP (R14): imagen principal + thumbs. Server Component;
 // los thumbs son links ?img=n (funciona sin JS) y con JS la galería es una
 // isla cliente (ProductGalleryClient) para crossfade sin reload.
+import { ViewTransition } from "react";
 import Image from "next/image";
 import { blurDataURLFromHex } from "../../utils/placeholder";
 import Link from "next/link";
@@ -22,26 +23,37 @@ type ProductGalleryProps = {
   /** href para cada thumb (?img=n) preservando variante. */
   hrefFor: (index: number) => string;
   labels: { gallery: string; imageOf: string };
+  /** Nombre del elemento compartido con la tarjeta origen (R23): `product-image-{id}`. */
+  vtName?: string;
 };
 
-export function ProductGallery({ images, activeIndex, hrefFor, labels }: ProductGalleryProps) {
+export function ProductGallery({
+  images,
+  activeIndex,
+  hrefFor,
+  labels,
+  vtName,
+}: ProductGalleryProps) {
   const active = images[activeIndex] ?? images[0];
   if (!active) return null;
 
   return (
     <div className={styles.gallery}>
       <div className={styles.main}>
-        <Image
-          key={active.src}
-          src={active.src}
-          alt={`${active.alt} (${activeIndex + 1} ${labels.imageOf} ${images.length})`}
-          width={active.width}
-          height={active.height}
-          sizes="(min-width: 60rem) 45vw, 100vw"
-          priority
-          placeholder="blur"
-          blurDataURL={blurDataURLFromHex(active.blurHex ?? "#E9E4D8")}
-        />
+        {/* `share` empareja con la tarjeta de la PLP (mismo `vtName`); `update` crossfadea al cambiar de variante/imagen (R23). */}
+        <ViewTransition name={vtName} share="auto" enter="auto" update="auto" default="none">
+          <Image
+            key={active.src}
+            src={active.src}
+            alt={`${active.alt} (${activeIndex + 1} ${labels.imageOf} ${images.length})`}
+            width={active.width}
+            height={active.height}
+            sizes="(min-width: 60rem) 45vw, 100vw"
+            priority
+            placeholder="blur"
+            blurDataURL={blurDataURLFromHex(active.blurHex ?? "#E9E4D8")}
+          />
+        </ViewTransition>
       </div>
       {images.length > 1 && (
         <ul className={styles.thumbs} aria-label={labels.gallery}>

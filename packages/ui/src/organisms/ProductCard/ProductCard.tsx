@@ -24,6 +24,8 @@ type ProductCardProps = {
     lastUnits?: string;
   };
   imagePriority?: boolean;
+  /** Nombre del elemento compartido para el morph PLP→PDP (R23). Default `product-image-{id}`; único por página. */
+  vtName?: string;
 };
 
 export function ProductCard({
@@ -33,6 +35,7 @@ export function ProductCard({
   hrefForVariant,
   labels,
   imagePriority = false,
+  vtName,
 }: ProductCardProps) {
   const name = product.name[locale];
   const pdpHref = hrefForVariant(product.defaultVariantId);
@@ -50,6 +53,7 @@ export function ProductCard({
           variantHrefs={variantHrefs}
           labels={labels}
           imagePriority={imagePriority}
+          vtName={vtName ?? `product-image-${product.id}`}
         />
         <div className={styles.badges}>
           {!product.hasStock ? (

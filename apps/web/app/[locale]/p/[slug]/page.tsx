@@ -138,6 +138,7 @@ export default async function PdpPage({ params, searchParams }: Props) {
           activeIndex={activeImage}
           hrefFor={(index: number) => pdpHref(variant.id, index)}
           labels={{ gallery: t.pdp.color, imageOf: t.pdp.imageOf }}
+          vtName={`product-image-${product.id}`}
         />
         <div className={styles.info}>
           <p className={styles.brand}>{product.brand}</p>

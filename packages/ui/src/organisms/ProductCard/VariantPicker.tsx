@@ -4,7 +4,7 @@
 // Sin JS sigue renderizando links a la PDP de cada variante; con JS el hover/focus
 // hace preview de imagen/precio sin navegar y el click va a la variante.
 import Image from "next/image";
-import { useState } from "react";
+import { useState, ViewTransition } from "react";
 import type { CardProduct } from "@nudo/commerce/card";
 import type { Locale } from "@nudo/i18n/config";
 import { formatPrice } from "@nudo/i18n/format";
@@ -27,6 +27,8 @@ type VariantPickerProps = {
     previousPrice: string;
   };
   imagePriority?: boolean;
+  /** Identidad del elemento compartido PLP→PDP (R23). Único por página renderizada. */
+  vtName?: string;
 };
 
 export function VariantPicker({
@@ -36,6 +38,7 @@ export function VariantPicker({
   variantHrefs,
   labels,
   imagePriority = false,
+  vtName,
 }: VariantPickerProps) {
   const variants = product.variants;
   const initial = variants.find((v) => v.id === initialVariantId) ?? variants[0];
@@ -57,16 +60,18 @@ export function VariantPicker({
     <>
       <div className={styles.media} data-media>
         {image ? (
-          <Image
-            src={image.src}
-            alt={image.alt[locale] || `${name}, ${active?.colorName[locale] ?? ""}`}
-            width={image.width}
-            height={image.height}
-            sizes="(min-width: 60rem) 25vw, 50vw"
-            priority={imagePriority}
-            placeholder="blur"
-            blurDataURL={blurDataURLFromHex(active?.colorHex ?? "#E9E4D8")}
-          />
+          <ViewTransition name={vtName} share="auto" default="none">
+            <Image
+              src={image.src}
+              alt={image.alt[locale] || `${name}, ${active?.colorName[locale] ?? ""}`}
+              width={image.width}
+              height={image.height}
+              sizes="(min-width: 60rem) 25vw, 50vw"
+              priority={imagePriority}
+              placeholder="blur"
+              blurDataURL={blurDataURLFromHex(active?.colorHex ?? "#E9E4D8")}
+            />
+          </ViewTransition>
         ) : (
           <span className={styles.noImage} aria-hidden="true" />
         )}

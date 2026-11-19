@@ -19,6 +19,7 @@ export async function NewArrivals({ locale, t }: { locale: Locale; t: Dictionary
     <section aria-labelledby="new-title" className="home-section">
       <h2 id="new-title">{t.home.newArrivals}</h2>
       <ProductGrid
+        vtNamePrefix="arrivals"
         products={cards}
         locale={locale}
         hrefForVariant={hrefForVariant(locale)}
