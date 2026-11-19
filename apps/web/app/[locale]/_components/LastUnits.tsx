@@ -33,6 +33,7 @@ export async function LastUnits({ locale, t }: { locale: Locale; t: Dictionary }
     <section aria-labelledby="last-title" className="home-section">
       <h2 id="last-title">{t.home.lastUnits}</h2>
       <ProductGrid
+        vtNamePrefix="last-units"
         products={cards}
         locale={locale}
         hrefForVariant={hrefForVariant(locale)}

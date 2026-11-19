@@ -86,6 +86,57 @@
     animation-duration: token("motion-slow");
     animation-timing-function: token("ease-move");
   }
+
+  /* R23: el checkout desliza horizontal (dirección distinta al morph/crossfade del catálogo);
+     el contador del carrito pulsa cuando una Server Action lo actualiza. */
+  @keyframes vt-slide-out {
+    to {
+      transform: translateX(-4rem);
+      opacity: 0;
+    }
+  }
+
+  @keyframes vt-slide-in {
+    from {
+      transform: translateX(4rem);
+      opacity: 0;
+    }
+  }
+
+  @keyframes vt-pulse-in {
+    from {
+      transform: scale(1.35);
+      opacity: 0.4;
+    }
+  }
+
+  ::view-transition-old(.vt-slide-out) {
+    animation: token("motion-base") token("ease-move") both vt-slide-out;
+  }
+
+  ::view-transition-new(.vt-slide-in) {
+    animation: token("motion-base") token("ease-move") both vt-slide-in;
+  }
+
+  ::view-transition-old(.vt-pulse) {
+    animation: token("motion-fast") token("ease-enter") both vt-pulse-in;
+  }
+
+  ::view-transition-new(.vt-pulse) {
+    animation: token("motion-fast") token("ease-enter") both vt-pulse-in;
+  }
+
+  @include reduced-motion {
+    /* Los pseudo-elementos de View Transition no heredan la regla `*`: se desactivan explícitos. */
+    /* stylelint-disable declaration-no-important -- reduced-motion debe ganarle a cualquier animación VT */
+    ::view-transition-old(*),
+    ::view-transition-new(*),
+    ::view-transition-group(*) {
+      animation-duration: token("motion-none") !important;
+      animation-delay: 0s !important;
+    }
+    /* stylelint-enable declaration-no-important */
+  }
 }
 
 @layer utilities {

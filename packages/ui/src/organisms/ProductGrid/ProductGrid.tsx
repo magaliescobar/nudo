@@ -23,6 +23,8 @@ type ProductGridProps = {
   priorityCount?: number;
   /** aria-label de la lista. */
   label?: string;
+  /** Prefijo del view-transition-name de las tarjetas (R23). Default "product-image" matchea la imagen de la PDP; secciones auxiliares pasan uno propio para no duplicar nombres. */
+  vtNamePrefix?: string;
 };
 
 export function ProductGrid({
@@ -32,6 +34,7 @@ export function ProductGrid({
   labels,
   priorityCount = 0,
   label,
+  vtNamePrefix = "product-image",
 }: ProductGridProps) {
   return (
     <ul className={styles.grid} aria-label={label}>
@@ -44,6 +47,7 @@ export function ProductGrid({
             hrefForVariant={(variantId) => hrefForVariant(product, variantId)}
             labels={labels}
             imagePriority={index < priorityCount}
+            vtName={`${vtNamePrefix}-${product.id}`}
           />
         </li>
       ))}
