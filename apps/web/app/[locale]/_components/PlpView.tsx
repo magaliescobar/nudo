@@ -170,6 +170,7 @@ export function PlpView({ locale, t, path, state, result, categories, stock, vie
   groups.push({
     key: "stock",
     title: "",
+    collapsible: false,
     options: [
       {
         value: "1",
