@@ -17,6 +17,8 @@ export type FacetGroupData = {
     readonly href: string;
     readonly hex?: string;
   }[];
+  /** false = siempre visible (sin desplegable). Default: desplegable. */
+  readonly collapsible?: boolean;
   /** Si el grupo es precio, renderiza PriceRange en vez de opciones. */
   readonly price?: {
     readonly min: number | undefined;
@@ -60,21 +62,54 @@ export function FacetPanel({ groups, activeChips = [], clearHref, clearLabel }: 
         </div>
       )}
       {groups.map((group) =>
-        group.price ? (
-          <section key={group.key} className={styles.group} aria-labelledby={`facet-${group.key}`}>
-            <h2 id={`facet-${group.key}`} className={styles.title}>
-              {group.title}
-            </h2>
-            <PriceRange
-              minValue={group.price.min}
-              maxValue={group.price.max}
-              labels={{
-                min: group.price.minLabel,
-                max: group.price.maxLabel,
-                apply: group.price.applyLabel,
-              }}
-              hidden={group.price.hidden}
-            />
+        group.price || group.collapsible === false ? (
+          <section
+            key={group.key}
+            className={styles.group}
+            {...(group.title
+              ? { "aria-labelledby": `facet-${group.key}` }
+              : { "aria-label": group.key })}
+          >
+            {group.title && (
+              <h2 id={`facet-${group.key}`} className={styles.title}>
+                {group.title}
+              </h2>
+            )}
+            {group.price ? (
+              <PriceRange
+                minValue={group.price.min}
+                maxValue={group.price.max}
+                labels={{
+                  min: group.price.minLabel,
+                  max: group.price.maxLabel,
+                  apply: group.price.applyLabel,
+                }}
+                hidden={group.price.hidden}
+              />
+            ) : (
+              <ul className={styles.options}>
+                {group.options.map((option) => (
+                  <li key={option.value}>
+                    <FacetOption
+                      href={option.href}
+                      label={option.label}
+                      count={option.count}
+                      checked={option.checked}
+                      disabled={option.disabled}
+                      lead={
+                        option.hex ? (
+                          <span
+                            className={styles.miniSwatch}
+                            style={{ backgroundColor: option.hex }}
+                            aria-hidden="true"
+                          />
+                        ) : undefined
+                      }
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         ) : (
           <details
