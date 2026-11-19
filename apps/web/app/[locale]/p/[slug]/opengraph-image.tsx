@@ -2,10 +2,13 @@ import { ImageResponse } from "next/og";
 import { getDictionary } from "@nudo/i18n/dictionaries";
 import { isLocale } from "@nudo/i18n/config";
 import { getCategories, getProductBySlug } from "../../../../lib/catalog";
+import { darkColor } from "../../../../lib/og-theme";
 
 // R33: OG image dinámica del PDP — nombre, marca, categoría y precio desde,
 // localizada por el segmento `[locale]`. Las lecturas son `use cache` +
 // tag `catalog`: la imagen queda cacheada y se invalida con el producto.
+// Los estilos van inline porque Satori no procesa CSS; los colores salen de
+// los tokens (tema oscuro) via lib/og-theme.
 export const alt = "NUDO";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -40,8 +43,8 @@ export default async function Image({ params }: Props) {
         width: "100%",
         height: "100%",
         padding: 64,
-        background: "#1a1a2e",
-        color: "#f5f2ea",
+        background: darkColor("color-bg"),
+        color: darkColor("color-text-primary"),
         fontFamily: "sans-serif",
       }}
     >
@@ -55,7 +58,7 @@ export default async function Image({ params }: Props) {
           {product.name[locale]}
         </span>
       </div>
-      <span style={{ fontSize: 40, fontWeight: 600, color: "#e8b84b" }}>
+      <span style={{ fontSize: 40, fontWeight: 600, color: darkColor("color-sale") }}>
         {fmt(min, currency, locale)}
       </span>
     </div>,

@@ -3,6 +3,7 @@ import { getDictionary } from "@nudo/i18n/dictionaries";
 import { isLocale } from "@nudo/i18n/config";
 import { resolveCategoryPath } from "../../../../../lib/categories";
 import { siteUrl } from "../../../../../lib/seo";
+import { darkColor } from "../../../../../lib/og-theme";
 
 // R33: OG image dinámica de la PLP de categoría. La convención
 // `opengraph-image.tsx` no admite catch-all, así que es route handler y el
@@ -31,8 +32,8 @@ export async function GET(_req: Request, { params }: Props) {
         width: "100%",
         height: "100%",
         padding: 64,
-        background: "#2e1a2e",
-        color: "#f5f2ea",
+        background: darkColor("color-surface"),
+        color: darkColor("color-text-primary"),
         fontFamily: "sans-serif",
       }}
     >
