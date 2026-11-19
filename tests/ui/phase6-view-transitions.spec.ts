@@ -36,7 +36,7 @@ test.describe("R23 — View Transitions", () => {
     await page.waitForTimeout(600);
 
     const vt = await page.evaluate(
-      () => (window as unknown as { __vt: { calls: number; names: string[] } }).__vt,
+      () => (globalThis as unknown as { __vt: { calls: number; names: string[] } }).__vt,
     );
     expect(vt.calls).toBeGreaterThanOrEqual(1);
 
@@ -56,20 +56,35 @@ test.describe("R23 — View Transitions", () => {
     await page.goto("/es/p/bota-hormigon-pro-074");
 
     // Talle habilitado + submit del form de variantes.
-    await page.locator('input[name="size"]:enabled').first().check();
-    await page.getByRole("button", { name: /agregar|añadir|add/i }).click();
+    const addOnce = async () => {
+      await page.locator('input[name="size"]:enabled').first().check();
+      await page.getByRole("button", { name: /agregar|añadir|add/i }).click();
+    };
+    await addOnce();
 
     await expect(async () => {
-      const vt = await page.evaluate(() => (window as unknown as { __vt: { calls: number } }).__vt);
+      const vt = await page.evaluate(
+        () => (globalThis as unknown as { __vt: { calls: number } }).__vt,
+      );
       expect(vt.calls).toBeGreaterThanOrEqual(1);
     }).toPass({ timeout: 10_000 });
+
+    // Regresión: una segunda adición del MISMO sku refresca el badge (la action
+    // llama `refresh()`; si no, el redirect al mismo url no reconsulta y el
+    // contador parecía no sumar).
+    await addOnce();
+    await expect(page.locator("header")).toContainText("2", { timeout: 10_000 });
   });
 
   test("el CSS define slide del checkout, pulso y corte por reduced-motion", async ({ page }) => {
     await page.goto("/es/cart");
     const css = await page.evaluate(() => {
       const parts: string[] = [];
-      for (const sheet of Array.from(document.styleSheets)) {
+      const sheets = Array.from(
+        (globalThis as unknown as { document: { styleSheets: ArrayLike<unknown> } }).document
+          .styleSheets,
+      ) as Array<{ cssRules: ArrayLike<{ cssText: string }> }>;
+      for (const sheet of sheets) {
         try {
           for (const rule of Array.from(sheet.cssRules)) parts.push(rule.cssText);
         } catch {

@@ -4,6 +4,7 @@
 // el cliente solo manda sku + qty. Los errores devuelven `{ ok:false, error }` serializable.
 import type { Cart } from "@nudo/commerce/catalog";
 import { headers } from "next/headers";
+import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { getProductById } from "../catalog";
 import { getRedisStore } from "@nudo/data/redis";
@@ -85,6 +86,11 @@ export async function removeCartLineAction(sku: string): Promise<CartActionResul
 /** Vuelve a la página que originó el POST (carrito/minicarrito/checkout). */
 async function backToReferer(): Promise<never> {
   const referer = (await headers()).get("referer");
+  // `refresh()` marca el client router para re-renderizar el árbol actual: sin esto,
+  // un redirect al MISMO url no reconsulta y el badge/mini-cart muestran datos viejos
+  // (p. ej. agregar la misma prenda dos veces parecía no sumar). Sin JS, el redirect
+  // igual provoca un full reload del MPA.
+  refresh();
   redirect(referer ?? "/");
 }
 
