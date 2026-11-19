@@ -109,3 +109,18 @@ node scripts/bundle-budget.mjs --write-baseline   # guarda baseline
 node scripts/bundle-budget.mjs --write-baseline --out=docs/perf/bundle-after.json
 node scripts/bundle-budget.mjs                    # enforce budgets (exit 1 si excede)
 ```
+
+## Herramienta complementaria: `next analyze`
+
+`pnpm -C apps/web analyze` (nativo de Next 16, **solo Turbopack** — no confundir
+con `@next/bundle-analyzer`, que es webpack-only y generaría un grafo distinto).
+
+- `next analyze` abre un treemap interactivo por módulo; `-o` escribe
+  `.next/diagnostics/analyze/` (incluye `route-summaries.json` por ruta);
+  `--snapshot <nombre>` guarda corridas comparables entre builds.
+- **Ojo con la métrica**: su `client.compressed_size` es el grafo completo de
+  módulos cliente alcanzables por la ruta (~490k comprimido acá) — incluye
+  chunks async/lazy. NO es First Load JS: los budgets de este lab se miden con
+  los `<script>` del documento (~190k gzip), via `bundle-budget.mjs`/spec.
+- Uso recomendado: cuando un budget se dispara, abrir el treemap para ubicar el
+  módulo culpable en vez de grepear chunks a mano.
