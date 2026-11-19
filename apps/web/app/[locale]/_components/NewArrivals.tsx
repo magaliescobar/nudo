@@ -31,7 +31,7 @@ export async function NewArrivals({ locale, t }: { locale: Locale; t: Dictionary
           new: t.catalog.badges.new,
           sale: t.catalog.badges.sale,
         }}
-        priorityCount={4}
+        priorityCount={1}
       />
     </section>
   );

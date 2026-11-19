@@ -12,11 +12,7 @@ export default function robots(): MetadataRoute.Robots {
   const privateAreas = [
     "/api/",
     "/_next/",
-    ...locales.flatMap((locale) => [
-      `/${locale}/cart`,
-      `/${locale}/checkout`,
-      `/${locale}/order`,
-    ]),
+    ...locales.flatMap((locale) => [`/${locale}/cart`, `/${locale}/checkout`, `/${locale}/order`]),
   ];
   const lowValueParams = ["/*?*sort=", "/*?*view=", "/*?*img="];
   return {

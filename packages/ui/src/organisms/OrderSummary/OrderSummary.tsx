@@ -5,6 +5,7 @@ import type { CartView } from "@nudo/commerce/cart";
 import type { Locale } from "@nudo/i18n/config";
 import { formatPrice } from "@nudo/i18n/format";
 import type { Money } from "@nudo/commerce/money";
+import { blurDataURLFromHex } from "../../utils/placeholder";
 import styles from "./OrderSummary.module.scss";
 
 type OrderSummaryProps = {
@@ -52,6 +53,8 @@ export function OrderSummary({
                     width={line.info.image.width}
                     height={line.info.image.height}
                     sizes="48px"
+                    placeholder="blur"
+                    blurDataURL={blurDataURLFromHex(line.info.colorHex)}
                   />
                 )}
                 <div className={styles.lineBody}>

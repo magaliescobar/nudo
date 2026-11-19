@@ -9,6 +9,7 @@ import type { CardProduct } from "@nudo/commerce/card";
 import type { Locale } from "@nudo/i18n/config";
 import { formatPrice } from "@nudo/i18n/format";
 import { SwatchGroup, type SwatchOption } from "../../molecules/SwatchGroup/SwatchGroup";
+import { blurDataURLFromHex } from "../../utils/placeholder";
 import styles from "./VariantPicker.module.scss";
 
 type VariantPickerProps = {
@@ -63,6 +64,8 @@ export function VariantPicker({
             height={image.height}
             sizes="(min-width: 60rem) 25vw, 50vw"
             priority={imagePriority}
+            placeholder="blur"
+            blurDataURL={blurDataURLFromHex(active?.colorHex ?? "#E9E4D8")}
           />
         ) : (
           <span className={styles.noImage} aria-hidden="true" />

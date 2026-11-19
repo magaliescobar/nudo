@@ -18,6 +18,7 @@ import type { Locale } from "@nudo/i18n/config";
 import * as v from "valibot";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getRedisStore } from "@nudo/data/redis";
 import { getCartId } from "../cart";
 import { getCheckoutSession, saveCheckoutSession } from "../checkout";
 
@@ -34,10 +35,14 @@ function stepHref(locale: Locale, step: string, error?: string): string {
 
 async function loadSessionOrRedirect(
   locale: Locale,
+  step: string,
 ): Promise<{ session: CheckoutSession; cartId: string }> {
   const cartId = await getCartId();
   const session = await getCheckoutSession(cartId);
   if (!cartId || !session) redirect(`/${locale}/cart`);
+  // R38: los submits de checkout son endpoints públicos — rate limit por cartId.
+  const rate = await getRedisStore().rateLimit("checkoutSubmit", cartId);
+  if (!rate.allowed) redirect(errorsHref(locale, step, { form: "rate-limited" }));
   return { session, cartId };
 }
 
@@ -82,7 +87,7 @@ export async function submitContact(
   _prev: StepActionState,
   formData: FormData,
 ): Promise<StepActionState> {
-  const { session } = await loadSessionOrRedirect(locale);
+  const { session } = await loadSessionOrRedirect(locale, "contact");
   const parsed = parseForm(contactSchema, formData);
   if ("errors" in parsed) return failStep(locale, "contact", parsed.errors);
   const next: CheckoutSession = { ...session, contact: parsed.data, step: "shipping" };
@@ -95,7 +100,7 @@ export async function submitShipping(
   _prev: StepActionState,
   formData: FormData,
 ): Promise<StepActionState> {
-  const { session } = await loadSessionOrRedirect(locale);
+  const { session } = await loadSessionOrRedirect(locale, "shipping");
   const parsed = parseForm(addressSchema, formData);
   if ("errors" in parsed) return failStep(locale, "shipping", parsed.errors);
   const next: CheckoutSession = {
@@ -112,7 +117,7 @@ export async function submitDelivery(
   _prev: StepActionState,
   formData: FormData,
 ): Promise<StepActionState> {
-  const { session } = await loadSessionOrRedirect(locale);
+  const { session } = await loadSessionOrRedirect(locale, "delivery");
   const parsed = parseForm(deliverySchema, formData);
   if ("errors" in parsed) return failStep(locale, "delivery", parsed.errors);
   const next: CheckoutSession = { ...session, delivery: parsed.data.method, step: "payment" };
@@ -125,7 +130,7 @@ export async function submitPayment(
   _prev: StepActionState,
   formData: FormData,
 ): Promise<StepActionState> {
-  const { session } = await loadSessionOrRedirect(locale);
+  const { session } = await loadSessionOrRedirect(locale, "payment");
   const parsed = parseForm(paymentSchema, formData);
   if ("errors" in parsed) return failStep(locale, "payment", parsed.errors);
   const next: CheckoutSession = {

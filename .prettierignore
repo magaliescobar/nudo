@@ -16,3 +16,6 @@ learning/
 # Generados por packages/tokens/scripts/build.ts
 packages/tokens/css/tokens.css
 packages/tokens/scss/_generated.scss
+
+# Archivos de entorno: sin parser aplicable.
+**/.env*

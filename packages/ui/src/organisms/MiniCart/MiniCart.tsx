@@ -1,16 +1,20 @@
 // MiniCart (R15): drawer del carrito. Client Component — abre/cierra, Escape,
 // focus trap liviano y optimistic qty. El contenido llega ya resuelto del server.
+// R34: el cuerpo del panel carga lazy (chunk aparte) — no es contenido crítico
+// del first load; se precarga en hover/focus del trigger para abrir sin lag.
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import dynamic from "next/dynamic";
 import type { CartView } from "@nudo/commerce/cart";
 import type { Locale } from "@nudo/i18n/config";
-import { formatPrice } from "@nudo/i18n/format";
-import { ButtonLink } from "../../atoms/Button/Button";
 import { Icon } from "../../atoms/Icon/Icon";
 import styles from "./MiniCart.module.scss";
+
+const MiniCartBody = dynamic(() => import("./MiniCartBody"));
+
+// Calienta el chunk del panel antes del click (mismo specifier que dynamic()).
+const warmPanel = () => void import("./MiniCartBody");
 
 type MiniCartProps = {
   locale: Locale;
@@ -64,6 +68,8 @@ export function MiniCart({
         type="button"
         className={styles.trigger}
         onClick={() => setOpen(true)}
+        onMouseEnter={warmPanel}
+        onFocus={warmPanel}
         aria-expanded={open}
         aria-haspopup="dialog"
       >
@@ -87,50 +93,15 @@ export function MiniCart({
                 <Icon name="close" />
               </button>
             </div>
-            {cart.lines.length === 0 ? (
-              <div className={styles.empty}>
-                <p>{labels.empty}</p>
-                <Link href={shopHref} onClick={() => setOpen(false)}>
-                  {labels.continueShopping}
-                </Link>
-              </div>
-            ) : (
-              <>
-                <ul className={styles.lines}>
-                  {cart.lines.map((line) => (
-                    <li key={line.sku} className={styles.line}>
-                      <Image
-                        src={line.info.image?.src ?? ""}
-                        alt=""
-                        width={line.info.image?.width ?? 64}
-                        height={line.info.image?.height ?? 64}
-                        sizes="48px"
-                      />
-                      <div>
-                        <p className={styles.name}>{line.info.productName[locale]}</p>
-                        <p className={styles.variant}>
-                          {line.info.colorName[locale]} · {line.info.size} · ×{line.qty}
-                        </p>
-                      </div>
-                      <span className={styles.price}>
-                        {formatPrice(locale, line.lineTotal.amountInCents)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <div className={styles.foot}>
-                  <p className={styles.subtotal}>
-                    {labels.subtotal}: {formatPrice(locale, cart.subtotal.amountInCents)}
-                  </p>
-                  <ButtonLink href={checkoutHref} block>
-                    {labels.checkout}
-                  </ButtonLink>
-                  <Link href={cartHref} onClick={() => setOpen(false)} className={styles.viewCart}>
-                    {labels.viewCart}
-                  </Link>
-                </div>
-              </>
-            )}
+            <MiniCartBody
+              locale={locale}
+              cart={cart}
+              labels={labels}
+              cartHref={cartHref}
+              checkoutHref={checkoutHref}
+              shopHref={shopHref}
+              onClose={() => setOpen(false)}
+            />
           </div>
         </div>
       )}

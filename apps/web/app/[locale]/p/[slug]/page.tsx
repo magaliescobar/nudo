@@ -133,6 +133,7 @@ export default async function PdpPage({ params, searchParams }: Props) {
             alt: image.alt[locale],
             width: image.width,
             height: image.height,
+            blurHex: variant.color.hex,
           }))}
           activeIndex={activeImage}
           hrefFor={(index: number) => pdpHref(variant.id, index)}

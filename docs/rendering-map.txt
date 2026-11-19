@@ -1,4 +1,4 @@
-# rendering map — 525f73b — 2026-11-18T21:10:42.906Z
+# rendering map — 104094b — 2026-11-19T14:22:02.022Z
 # Regenerar: pnpm rendering:map · leyenda: ○ estático · ◐ partial prerender · ƒ dinámico
 Route (app)                             Revalidate  Expire
 ┌ ○ /_not-found
@@ -39,6 +39,7 @@ Route (app)                             Revalidate  Expire
 ├ ƒ /api/internal/stats
 ├ ƒ /api/plp
 ├ ƒ /api/products/[id]
+├ ƒ /api/vitals
 ├ ○ /llms-full.txt                             15m      1d
 ├ ○ /llms.txt                                  15m      1d
 ├ ○ /robots.txt
