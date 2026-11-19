@@ -11,7 +11,7 @@ export async function GET() {
   const lines: string[] = [
     "# NUDO",
     "",
-    "> NUDO es una mini-tienda de comercio electrónico bilingüe (es/en).",
+    "> NUDO es una mini-tienda de comercio electrónico en varios idiomas.",
     "> Catálogo de indumentaria con PDPs, categorías, carrito de invitado y checkout.",
     "",
     "## Policy",
