@@ -36,7 +36,7 @@ test.describe("R23 — View Transitions", () => {
     await page.waitForTimeout(600);
 
     const vt = await page.evaluate(
-      () => (window as unknown as { __vt: { calls: number; names: string[] } }).__vt,
+      () => (globalThis as unknown as { __vt: { calls: number; names: string[] } }).__vt,
     );
     expect(vt.calls).toBeGreaterThanOrEqual(1);
 
@@ -60,7 +60,9 @@ test.describe("R23 — View Transitions", () => {
     await page.getByRole("button", { name: /agregar|añadir|add/i }).click();
 
     await expect(async () => {
-      const vt = await page.evaluate(() => (window as unknown as { __vt: { calls: number } }).__vt);
+      const vt = await page.evaluate(
+        () => (globalThis as unknown as { __vt: { calls: number } }).__vt,
+      );
       expect(vt.calls).toBeGreaterThanOrEqual(1);
     }).toPass({ timeout: 10_000 });
   });
@@ -69,7 +71,11 @@ test.describe("R23 — View Transitions", () => {
     await page.goto("/es/cart");
     const css = await page.evaluate(() => {
       const parts: string[] = [];
-      for (const sheet of Array.from(document.styleSheets)) {
+      const sheets = Array.from(
+        (globalThis as unknown as { document: { styleSheets: ArrayLike<unknown> } }).document
+          .styleSheets,
+      ) as Array<{ cssRules: ArrayLike<{ cssText: string }> }>;
+      for (const sheet of sheets) {
         try {
           for (const rule of Array.from(sheet.cssRules)) parts.push(rule.cssText);
         } catch {

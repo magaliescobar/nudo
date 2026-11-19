@@ -10,6 +10,9 @@
   flex: none;
   border-radius: 50%;
   background: var(--c);
+
+  /* Borde permanente: los colores claros (hueso/blanco) son invisibles sin él. */
+  border: token("border-thin") solid token("color-border");
   cursor: pointer;
   position: relative;
 
@@ -31,7 +34,7 @@
   &[aria-checked="true"],
   &.is-selected {
     &::after {
-      border-color: var(--swatch-ring);
+      border-color: token("swatch-ring");
       border-width: token("border-thick");
     }
   }

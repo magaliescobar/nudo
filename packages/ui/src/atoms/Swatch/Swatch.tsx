@@ -1,4 +1,4 @@
-// Swatch de color (R13): círculo con el hex de la variante vía `--_c`.
+// Swatch de color (R13): círculo con el hex de la variante vía `--c`.
 // Modos: `static` (span, role=img) para mostrar, o botón/enlace para elegir.
 // Estados: selected, out (sin stock), sm (compacto en tarjetas), hover (preview).
 import type { CSSProperties, ReactNode } from "react";
@@ -39,7 +39,7 @@ export function Swatch({
       ]
         .filter(Boolean)
         .join(" ")}
-      style={{ "--_c": hex } as CSSProperties}
+      style={{ "--c": hex } as CSSProperties}
       role="img"
       aria-label={`${name}${out && outLabel ? `, ${outLabel}` : ""}`}
       aria-hidden={children ? true : undefined}
