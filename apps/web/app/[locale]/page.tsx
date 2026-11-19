@@ -7,6 +7,7 @@ import { getDictionary } from "@nudo/i18n/dictionaries";
 import { ButtonLink } from "@nudo/ui/atoms/Button";
 import { Skeleton } from "@nudo/ui/atoms/Skeleton";
 import { getCategories } from "../../lib/catalog";
+import { homePaths, localizedAlternates } from "../../lib/seo";
 import { NewArrivals } from "./_components/NewArrivals";
 import { LastUnits } from "./_components/LastUnits";
 import styles from "./page.module.scss";
@@ -19,7 +20,16 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = await getDictionary(locale);
-  return { description: t.meta.description };
+  const alternates = localizedAlternates(locale, homePaths());
+  return {
+    description: t.meta.description,
+    alternates,
+    openGraph: {
+      title: t.meta.siteName,
+      description: t.meta.description,
+      url: alternates.canonical,
+    },
+  };
 }
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {

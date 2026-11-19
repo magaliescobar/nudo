@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
-import { isLocale } from "@nudo/i18n/config";
+import { defaultLocale, isLocale } from "@nudo/i18n/config";
 import { getDictionary } from "@nudo/i18n/dictionaries";
 import { PlpView } from "../../_components/PlpView";
 import { parsePlpParams, plpHref, stateToFilters } from "../../../../lib/plp";
 import { getCategories, getPlpPage, getPlpStock } from "../../../../lib/plp";
-import { resolveCategoryPath, subtreeCategoryIds } from "../../../../lib/categories";
+import {
+  categoryBreadcrumbs,
+  resolveCategoryPath,
+  subtreeCategoryIds,
+} from "../../../../lib/categories";
+import { categoryPaths, indexablePlpState } from "../../../../lib/seo";
+import { breadcrumbJsonLd, itemListJsonLd, JsonLd } from "../../../../lib/jsonld";
 
 // `instant=false` + datos de request fuera de Suspense: la PLP es 100 % URL-driven
 // y debe filtrar y
@@ -19,12 +25,45 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 type Props = { params: Params; searchParams: SearchParams };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
-  const resolved = await resolveCategoryPath(locale, slug);
+  const [resolved, categories, sp] = await Promise.all([
+    resolveCategoryPath(locale, slug),
+    getCategories(),
+    searchParams,
+  ]);
   if (!resolved) return {};
-  return { title: resolved.category.name[locale] };
+  const state = parsePlpParams(sp);
+  const paths = categoryPaths(resolved.category, categories);
+  // R27/R28: canonical = la URL normalizada propia (facetas + page, sin `view`);
+  // hreflang apunta a la categoría sin facetas en cada idioma (los valores de
+  // faceta son localizados). La política de facetas marca noindex el resto.
+  const alternates = {
+    canonical: plpHref(locale, { kind: "category", segments: resolved.canonicalSegments }, state),
+    languages: { ...paths, "x-default": paths[defaultLocale] },
+  };
+  const index = indexablePlpState(state);
+  return {
+    title: resolved.category.name[locale],
+    alternates,
+    ...(index ? {} : { robots: { index: false, follow: true } }),
+    openGraph: {
+      title: resolved.category.name[locale],
+      url: alternates.canonical,
+      // R33: og:image dinámica — route handler propio porque la convención
+      // `opengraph-image` no admite catch-all. Cacheada por path via use cache.
+      images: [
+        {
+          url: `/${locale}/og/category/${resolved.canonicalSegments.join("/")}`,
+          width: 1200,
+          height: 630,
+          alt: resolved.category.name[locale],
+        },
+      ],
+    },
+    twitter: { card: "summary_large_image" },
+  };
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {
@@ -68,16 +107,29 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   }
   const stock = await getPlpStock(result.products);
 
+  const crumbs = categoryBreadcrumbs(resolved, categories);
+  const jsonLdCrumbs = [
+    { name: t.nav.shop, path: `/${locale}` },
+    ...crumbs.map((crumb) => ({
+      name: crumb.category.name[locale],
+      path: `/${locale}/c/${crumb.segments.join("/")}`,
+    })),
+  ];
+
   return (
-    <PlpView
-      locale={locale}
-      t={t}
-      path={{ kind: "category", segments: resolved.canonicalSegments }}
-      state={state}
-      result={result}
-      categories={categories}
-      stock={stock}
-      view={view}
-    />
+    <>
+      <JsonLd data={breadcrumbJsonLd(locale, jsonLdCrumbs)} />
+      <JsonLd data={itemListJsonLd(locale, result.products)} />
+      <PlpView
+        locale={locale}
+        t={t}
+        path={{ kind: "category", segments: resolved.canonicalSegments }}
+        state={state}
+        result={result}
+        categories={categories}
+        stock={stock}
+        view={view}
+      />
+    </>
   );
 }

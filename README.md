@@ -24,6 +24,21 @@ Commerce urbano ES/EN con Next.js 16 (App Router, Turbopack, Cache Components), 
 - Decisiones: `docs/adr/`
 - Tokens: `docs/design-tokens-map.md` · Redis: `docs/redis-keys.md`
 
+## Política de indexación (resumen)
+
+| Zona                                     | robots.txt   | Indexación            |
+| ---------------------------------------- | ------------ | --------------------- |
+| Home, PDP, categorías limpias            | allow        | index                 |
+| PLP con ≤1 faceta                        | allow        | index                 |
+| PLP con ≥2 facetas / precio / sort / `q` | allow        | `noindex,follow`      |
+| `?sort=` `?view=` `?img=`                | disallow     | —                     |
+| Búsqueda interna `/search`               | allow        | `noindex,follow`      |
+| Carrito, checkout, pedido, `/api/`       | disallow     | `noindex,nofollow`    |
+| Producto `discontinued`                  | allow        | `noindex` (sigue 200) |
+| Crawlers de entrenamiento IA             | disallow `/` | —                     |
+
+Detalle y motivos: `docs/adr/025-politica-indexacion-crawlers.md`.
+
 ## Agregar un idioma (p. ej. portugués)
 
 El mecanismo está completo; `pt` no se incluye todavía. Agregarlo toca **solo** config, un diccionario y datos de contenido: ninguna página ni componente.

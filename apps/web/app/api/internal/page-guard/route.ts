@@ -16,7 +16,7 @@ import {
   type CheckoutStepName,
 } from "@nudo/commerce/checkout";
 import { guardInternal, internalHeaders } from "../../../../lib/internal-auth";
-import { getProductBySlug } from "../../../../lib/catalog";
+import { findRedirect, getProductBySlug } from "../../../../lib/catalog";
 import { resolveCategoryPath } from "../../../../lib/categories";
 import { getCartView } from "../../../../lib/cart";
 import { getCheckoutSession } from "../../../../lib/checkout";
@@ -24,12 +24,15 @@ import type { CheckoutSession } from "@nudo/commerce/catalog";
 
 const allow = () => new NextResponse(null, { status: 204, headers: internalHeaders });
 const deny = () => new NextResponse(null, { status: 404, headers: internalHeaders });
-const redirectTo = (to: string) =>
-  NextResponse.json({ redirect: to }, { status: 200, headers: internalHeaders });
+const redirectTo = (to: string, status = 307) =>
+  NextResponse.json({ redirect: to, status }, { status: 200, headers: internalHeaders });
 
+// R32: un slug viejo consulta la tabla Redirect (301/308); un slug inexistente → 404.
 async function guardProduct(locale: Locale, slug: string) {
   const product = await getProductBySlug(locale, slug);
-  return product && product.status !== "draft" ? allow() : deny();
+  if (product && product.status !== "draft") return allow();
+  const redirect = await findRedirect(`/${locale}/p/${slug}`);
+  return redirect ? redirectTo(redirect.to, redirect.status) : deny();
 }
 
 async function guardCategory(locale: Locale, segments: string) {
