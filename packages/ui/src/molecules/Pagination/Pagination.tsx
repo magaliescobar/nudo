@@ -36,7 +36,7 @@ export function Pagination({ hrefFor, page, pageCount, labels }: PaginationProps
       <ul>
         <li>
           {page > 1 ? (
-            <Link href={hrefFor(page - 1)} className={styles.edge} rel="prev" scroll={false}>
+            <Link href={hrefFor(page - 1)} className={styles.edge} rel="prev">
               <Icon name="chevronLeft" size="sm" />
               <span>{labels.previous}</span>
             </Link>
@@ -65,7 +65,7 @@ export function Pagination({ hrefFor, page, pageCount, labels }: PaginationProps
                   {item}
                 </span>
               ) : (
-                <Link href={hrefFor(item)} scroll={false} aria-label={`${labels.page} ${item}`}>
+                <Link href={hrefFor(item)} aria-label={`${labels.page} ${item}`}>
                   {item}
                 </Link>
               )}
@@ -74,7 +74,7 @@ export function Pagination({ hrefFor, page, pageCount, labels }: PaginationProps
         )}
         <li>
           {page < pageCount ? (
-            <Link href={hrefFor(page + 1)} className={styles.edge} rel="next" scroll={false}>
+            <Link href={hrefFor(page + 1)} className={styles.edge} rel="next">
               <span>{labels.next}</span>
               <Icon name="chevronRight" size="sm" />
             </Link>

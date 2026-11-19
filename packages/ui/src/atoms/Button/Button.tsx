@@ -27,7 +27,7 @@ type ButtonProps = {
   value?: string;
 };
 
-type ButtonLinkProps = Omit<ButtonProps, "type" | "onClick" | "busy"> & {
+type ButtonLinkProps = Omit<ButtonProps, "type" | "busy"> & {
   href: string;
   prefetch?: boolean;
 };
@@ -100,11 +100,13 @@ export function ButtonLink({
   className,
   href,
   prefetch,
+  onClick,
 }: ButtonLinkProps) {
   return (
     <Link
       href={href}
       prefetch={prefetch}
+      onClick={onClick}
       aria-disabled={disabled || undefined}
       className={classes(variant, size, [
         iconOnly && styles["is-icon"],

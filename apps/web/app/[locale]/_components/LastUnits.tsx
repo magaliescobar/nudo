@@ -9,6 +9,7 @@ import { ProductGrid } from "@nudo/ui/organisms/ProductGrid";
 import { toCardProduct } from "@nudo/commerce/card";
 import { getPlpPage, getPlpStock } from "../../../lib/plp";
 import { hrefForVariant } from "./PlpView";
+import styles from "../page.module.scss";
 
 const LAST_UNITS_THRESHOLD = 8;
 
@@ -30,7 +31,7 @@ export async function LastUnits({ locale, t }: { locale: Locale; t: Dictionary }
     .map(({ product, initialVariantId }) => ({ product, initialVariantId }));
   if (cards.length === 0) return null;
   return (
-    <section aria-labelledby="last-title" className="home-section">
+    <section aria-labelledby="last-title" className={styles["home-section"]}>
       <h2 id="last-title">{t.home.lastUnits}</h2>
       <ProductGrid
         vtNamePrefix="last-units"

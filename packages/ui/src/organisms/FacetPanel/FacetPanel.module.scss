@@ -42,12 +42,44 @@
 }
 
 .title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: token("space-xs");
   margin: 0;
   font-size: token("text-sm");
   font-weight: token("weight-bold");
   letter-spacing: token("tracking-caps");
   text-transform: uppercase;
   color: token("color-text-primary");
+}
+
+summary.title {
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: token("border-thin") solid token("color-focus");
+    outline-offset: token("space-2xs");
+  }
+}
+
+.caret {
+  inline-size: token("text-xs");
+  block-size: token("text-xs");
+  border-inline-end: token("border-thin") solid token("color-text-secondary");
+  border-block-end: token("border-thin") solid token("color-text-secondary");
+  transform: rotate(45deg);
+  transition: transform token("motion-fast") token("ease-move");
+  flex: none;
+}
+
+.group[open] .caret {
+  transform: rotate(225deg);
 }
 
 .options {

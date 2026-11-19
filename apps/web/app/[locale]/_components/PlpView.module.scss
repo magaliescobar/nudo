@@ -68,6 +68,7 @@
   display: grid;
   gap: token("space-lg");
   justify-items: center;
+  scroll-margin-block-start: calc(token("size-header") + token("space-md"));
 }
 
 .empty {
