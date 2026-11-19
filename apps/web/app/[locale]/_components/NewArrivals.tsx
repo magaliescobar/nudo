@@ -6,6 +6,7 @@ import { ProductGrid } from "@nudo/ui/organisms/ProductGrid";
 import { toCardProduct } from "@nudo/commerce/card";
 import { getPlpPage, getPlpStock } from "../../../lib/plp";
 import { hrefForVariant } from "./PlpView";
+import styles from "../page.module.scss";
 
 export async function NewArrivals({ locale, t }: { locale: Locale; t: Dictionary }) {
   const result = await getPlpPage({}, locale, "newest", 1);
@@ -16,7 +17,7 @@ export async function NewArrivals({ locale, t }: { locale: Locale; t: Dictionary
   }));
   if (cards.length === 0) return null;
   return (
-    <section aria-labelledby="new-title" className="home-section">
+    <section aria-labelledby="new-title" className={styles["home-section"]}>
       <h2 id="new-title">{t.home.newArrivals}</h2>
       <ProductGrid
         vtNamePrefix="arrivals"

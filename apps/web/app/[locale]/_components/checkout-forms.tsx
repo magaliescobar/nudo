@@ -53,6 +53,7 @@ export function ContactForm({ locale, t, initialErrors }: Props) {
         name="email"
         type="email"
         autoComplete="email"
+        autoFocus
         required
         error={e.email}
       />

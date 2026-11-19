@@ -57,7 +57,7 @@ function initialVariantOf(product: Parameters<typeof toCardProduct>[0], colorId?
 export function PlpView({ locale, t, path, state, result, categories, stock, view }: PlpViewProps) {
   const c = t.catalog;
   const base = (next: Partial<PlpState>) => plpHref(locale, path, { ...state, ...next, page: 1 });
-  const pageHref = (page: number) => plpHref(locale, path, { ...state, page });
+  const pageHref = (page: number) => `${plpHref(locale, path, { ...state, page })}#plp-results`;
 
   const categoryName = new Map(categories.map((cat) => [cat.id, cat.name[locale]]));
   const facetToggles: { param: "cat" | "color" | "size" | "brand" | "stock"; value: string }[] = [
@@ -256,7 +256,7 @@ export function PlpView({ locale, t, path, state, result, categories, stock, vie
             clearLabel={c.clearFilters}
           />
         </aside>
-        <section className={styles.results} aria-label={c.filters}>
+        <section id="plp-results" className={styles.results} aria-label={c.filters}>
           {result.products.length === 0 ? (
             <div className={styles.empty}>
               <h2>{c.empty.title}</h2>

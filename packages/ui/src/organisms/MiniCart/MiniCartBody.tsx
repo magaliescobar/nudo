@@ -77,7 +77,7 @@ export default function MiniCartBody({
         <p className={styles.subtotal}>
           {labels.subtotal}: {formatPrice(locale, cart.subtotal.amountInCents)}
         </p>
-        <ButtonLink href={checkoutHref} block>
+        <ButtonLink href={checkoutHref} onClick={onClose} block>
           {labels.checkout}
         </ButtonLink>
         <Link href={cartHref} onClick={onClose} className={styles.viewCart}>

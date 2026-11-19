@@ -59,12 +59,12 @@ export function FacetPanel({ groups, activeChips = [], clearHref, clearLabel }: 
           )}
         </div>
       )}
-      {groups.map((group) => (
-        <section key={group.key} className={styles.group} aria-labelledby={`facet-${group.key}`}>
-          <h2 id={`facet-${group.key}`} className={styles.title}>
-            {group.title}
-          </h2>
-          {group.price ? (
+      {groups.map((group) =>
+        group.price ? (
+          <section key={group.key} className={styles.group} aria-labelledby={`facet-${group.key}`}>
+            <h2 id={`facet-${group.key}`} className={styles.title}>
+              {group.title}
+            </h2>
             <PriceRange
               minValue={group.price.min}
               maxValue={group.price.max}
@@ -75,7 +75,17 @@ export function FacetPanel({ groups, activeChips = [], clearHref, clearLabel }: 
               }}
               hidden={group.price.hidden}
             />
-          ) : (
+          </section>
+        ) : (
+          <details
+            key={group.key}
+            className={styles.group}
+            open={group.options.some((option) => option.checked)}
+          >
+            <summary id={`facet-${group.key}`} className={styles.title}>
+              {group.title}
+              <span aria-hidden="true" className={styles.caret} />
+            </summary>
             <ul className={styles.options}>
               {group.options.map((option) => (
                 <li key={option.value}>
@@ -98,9 +108,9 @@ export function FacetPanel({ groups, activeChips = [], clearHref, clearLabel }: 
                 </li>
               ))}
             </ul>
-          )}
-        </section>
-      ))}
+          </details>
+        ),
+      )}
     </div>
   );
 }
