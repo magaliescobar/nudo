@@ -50,74 +50,78 @@ export function SwatchGroup({
   const preview = (id: string) => onPreview?.(id);
 
   return (
-    <fieldset className={[styles.group, compact && styles["is-compact"]].filter(Boolean).join(" ")}>
-      <legend className={showLabel ? undefined : "vh"}>
-        <b>{legend}:</b> {selectedName && <span data-color-name>{selectedName}</span>}
-      </legend>
-      <div className={styles.opts} role="radiogroup" aria-label={labels?.chooseColor ?? legend}>
-        {options.map((option) => {
-          const selected = option.id === selectedId;
-          const outLabel = option.hasStock ? undefined : labels?.soldOut;
-          const ariaLabel = `${option.name}${outLabel ? `, ${outLabel}` : ""}`;
-          const swatch = (
-            <Swatch
-              hex={option.hex}
-              name={option.name}
-              selected={selected}
-              out={!option.hasStock}
-              size={size}
-              outLabel={outLabel}
-            />
-          );
-          const cls = [styles.swatchBtn, size === "sm" && styles["is-sm"]]
-            .filter(Boolean)
-            .join(" ");
-          const previewHandlers = onPreview
-            ? { onMouseEnter: () => preview(option.id), onFocus: () => preview(option.id) }
-            : {};
+    <div className={styles.swatchGroup}>
+      <fieldset
+        className={[styles.group, compact && styles["is-compact"]].filter(Boolean).join(" ")}
+      >
+        <legend className={showLabel ? undefined : "vh"}>
+          <b>{legend}:</b> {selectedName && <span data-color-name>{selectedName}</span>}
+        </legend>
+        <div className={styles.opts} role="radiogroup" aria-label={labels?.chooseColor ?? legend}>
+          {options.map((option) => {
+            const selected = option.id === selectedId;
+            const outLabel = option.hasStock ? undefined : labels?.soldOut;
+            const ariaLabel = `${option.name}${outLabel ? `, ${outLabel}` : ""}`;
+            const swatch = (
+              <Swatch
+                hex={option.hex}
+                name={option.name}
+                selected={selected}
+                out={!option.hasStock}
+                size={size}
+                outLabel={outLabel}
+              />
+            );
+            const cls = [styles.swatchBtn, size === "sm" && styles["is-sm"]]
+              .filter(Boolean)
+              .join(" ");
+            const previewHandlers = onPreview
+              ? { onMouseEnter: () => preview(option.id), onFocus: () => preview(option.id) }
+              : {};
 
-          if (interactive) {
-            return (
-              <button
+            if (interactive) {
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  tabIndex={selected ? 0 : -1}
+                  className={cls}
+                  onClick={() => onSelect?.(option.id)}
+                  aria-label={ariaLabel}
+                  {...previewHandlers}
+                >
+                  {swatch}
+                </button>
+              );
+            }
+
+            return option.href ? (
+              <NextLink
                 key={option.id}
-                type="button"
+                href={option.href}
+                className={cls}
+                aria-label={ariaLabel}
                 role="radio"
                 aria-checked={selected}
-                tabIndex={selected ? 0 : -1}
-                className={cls}
-                onClick={() => onSelect?.(option.id)}
-                aria-label={ariaLabel}
                 {...previewHandlers}
               >
                 {swatch}
-              </button>
+              </NextLink>
+            ) : (
+              <span
+                key={option.id}
+                className={styles.swatchStatic}
+                role="radio"
+                aria-checked={selected}
+              >
+                {swatch}
+              </span>
             );
-          }
-
-          return option.href ? (
-            <NextLink
-              key={option.id}
-              href={option.href}
-              className={cls}
-              aria-label={ariaLabel}
-              role="radio"
-              aria-checked={selected}
-              {...previewHandlers}
-            >
-              {swatch}
-            </NextLink>
-          ) : (
-            <span
-              key={option.id}
-              className={styles.swatchStatic}
-              role="radio"
-              aria-checked={selected}
-            >
-              {swatch}
-            </span>
-          );
-        })}
-      </div>
-    </fieldset>
+          })}
+        </div>
+      </fieldset>
+    </div>
   );
 }

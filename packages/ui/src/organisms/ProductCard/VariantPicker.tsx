@@ -87,16 +87,18 @@ export function VariantPicker({
         onPreview={setPreviewId}
         labels={{ soldOut: labels.soldOut, chooseColor: labels.chooseColor }}
       />
-      <p className={styles.price} data-price>
-        {active?.minPrice ? (
-          <>
-            <span className="vh">
-              {labels.currentPrice}: {formatPrice(locale, active.minPrice.amountInCents)}
-            </span>
-            <span aria-hidden="true">{formatPrice(locale, active.minPrice.amountInCents)}</span>
-          </>
-        ) : null}
-      </p>
+      <div className={styles.priceWrap}>
+        <p className={styles.price} data-price>
+          {active?.minPrice ? (
+            <>
+              <span className="vh">
+                {labels.currentPrice}: {formatPrice(locale, active.minPrice.amountInCents)}
+              </span>
+              <span aria-hidden="true">{formatPrice(locale, active.minPrice.amountInCents)}</span>
+            </>
+          ) : null}
+        </p>
+      </div>
     </>
   );
 }
