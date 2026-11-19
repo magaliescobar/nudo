@@ -5,9 +5,15 @@ import type { Category, Product } from "@nudo/commerce/catalog";
 /** Origen público para URLs absolutas (metadataBase, OG, sitemap, llms.txt). */
 export function siteUrl(): string {
   return (
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3100")
-  ).replace(/\/+$/, "");
+    // SITE_URL es server-only: el prefijo NEXT_PUBLIC_ la metería en el bundle
+    // del cliente sin necesidad (warning de Vercel). Se acepta el nombre viejo
+    // como fallback para no romper despliegues existentes.
+    (
+      process.env.SITE_URL ??
+      process.env.NEXT_PUBLIC_SITE_URL ??
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3100")
+    ).replace(/\/+$/, "")
+  );
 }
 
 export type LocalizedPaths = Record<Locale, string>;

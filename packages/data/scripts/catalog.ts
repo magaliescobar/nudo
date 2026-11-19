@@ -6,7 +6,7 @@
 //   pnpm catalog:set-status <productId> <draft|active|discontinued>
 //   pnpm catalog:set-slug   <productId> <es|en> <slug>
 //   pnpm catalog:invalidate <tag> [tag…]
-// Destino: CATALOG_INVALIDATE_URL (o NEXT_PUBLIC_SITE_URL). Secreto: INTERNAL_API_SECRET.
+// Destino: CATALOG_INVALIDATE_URL (o SITE_URL). Secreto: INTERNAL_API_SECRET.
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { isLocale, type Locale } from "@nudo/i18n/config";
@@ -35,10 +35,10 @@ function localeArg(value: string | undefined): Locale {
 }
 
 async function invalidate(tags: string[]) {
-  const base = process.env.CATALOG_INVALIDATE_URL ?? process.env.NEXT_PUBLIC_SITE_URL;
+  const base =
+    process.env.CATALOG_INVALIDATE_URL ?? process.env.SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL;
   const secret = process.env.INTERNAL_API_SECRET;
-  if (!base || !secret)
-    fail("faltan CATALOG_INVALIDATE_URL/NEXT_PUBLIC_SITE_URL o INTERNAL_API_SECRET");
+  if (!base || !secret) fail("faltan CATALOG_INVALIDATE_URL/SITE_URL o INTERNAL_API_SECRET");
   const response = await fetch(new URL("/api/internal/invalidate", base), {
     method: "POST",
     headers: { authorization: `Bearer ${secret}`, "content-type": "application/json" },
