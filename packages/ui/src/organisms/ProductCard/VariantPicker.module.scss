@@ -21,6 +21,10 @@
   background: token("color-skeleton");
 }
 
+.priceWrap {
+  padding: token("space-xs") token("space-sm") token("space-sm");
+}
+
 .price {
   margin: 0;
   font-weight: token("weight-bold");

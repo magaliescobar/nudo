@@ -38,6 +38,13 @@
   }
 }
 
+.swatchGroup {
+  display: flex;
+  flex-direction: column;
+  gap: token("space-xs");
+  padding: token("space-sm");
+}
+
 .is-compact .opts {
   gap: token("space-2xs");
 }
