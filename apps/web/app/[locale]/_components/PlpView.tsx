@@ -300,7 +300,7 @@ export function PlpView({ locale, t, path, state, result, categories, stock, vie
                 locale={locale}
                 hrefForVariant={hrefForVariant(locale)}
                 labels={cardLabels(t)}
-                priorityCount={4}
+                priorityCount={1}
               />
               <Pagination
                 hrefFor={pageHref}

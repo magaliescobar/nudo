@@ -27,7 +27,13 @@ export const keys = {
   idempotency: (idempotencyKey: string) => `${redisPrefix}:idem:order:${idempotencyKey}`,
   /** Log de invalidaciones (lo escribe apps/web/cache-handlers/nudo-handler.js). */
   tagLog: `${cacheNamespace}:tag-log`,
+  /** Muestras RUM de Web Vitals (R35): lista acotada FIFO. */
+  vitals: () => `${redisPrefix}:vitals:samples`,
 } as const;
+
+/** Máximo de muestras RUM retenidas y su TTL (7 días). */
+export const vitalsMaxSamples = 5_000;
+export const vitalsTtlSeconds = 7 * 24 * 60 * 60;
 
 /** Canal pub/sub de invalidación de cachés L1 entre instancias. */
 export const invalidationChannel = `${redisPrefix}:invalidate`;
@@ -36,8 +42,14 @@ export const invalidationChannel = `${redisPrefix}:invalidate`;
 export const rateLimits = {
   search: { limit: 30, windowSeconds: 10, onRedisDown: "allow" },
   orderConfirm: { limit: 5, windowSeconds: 60, onRedisDown: "deny" },
+  /** Mutaciones de carrito por cartId: generoso, el flow normal son pocos clicks. */
+  cartMutation: { limit: 30, windowSeconds: 10, onRedisDown: "allow" },
+  /** Submits de pasos de checkout por cartId. */
+  checkoutSubmit: { limit: 20, windowSeconds: 60, onRedisDown: "allow" },
   /** Endpoint interno de invalidación: fail-closed, frena fuerza bruta del secreto. */
   internal: { limit: 120, windowSeconds: 60, onRedisDown: "deny" },
+  /** Beacons RUM por IP: ~5 métricas por página; acota firehose sin romper NAT. */
+  vitals: { limit: 300, windowSeconds: 60, onRedisDown: "allow" },
 } as const satisfies Record<
   string,
   { limit: number; windowSeconds: number; onRedisDown: "allow" | "deny" }

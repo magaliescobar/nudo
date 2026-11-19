@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
 
+  // R34: sin console.* en el bundle de producción (salvo error/warn).
+  compiler: {
+    removeConsole: { exclude: ["error", "warn"] },
+  },
+
   // Mismo id en todas las instancias de una build (R04): versiona assets, `'use cache'` y Server Actions.
   deploymentId: process.env.NEXT_DEPLOYMENT_ID || undefined,
 

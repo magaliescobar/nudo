@@ -29,7 +29,10 @@
     "env:secrets": "node scripts/env-secrets.mjs",
     "docker:up": "docker compose up --build -d",
     "test:multi": "playwright test --project=multi",
-    "rendering:map": "node scripts/rendering-map.mjs"
+    "rendering:map": "node scripts/rendering-map.mjs",
+    "bundle:check": "node scripts/bundle-budget.mjs",
+    "vitals:report": "node scripts/vitals-report.mjs",
+    "lighthouse": "node scripts/lighthouse.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

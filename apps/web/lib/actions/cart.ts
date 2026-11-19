@@ -6,6 +6,7 @@ import type { Cart } from "@nudo/commerce/catalog";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getProductById } from "../catalog";
+import { getRedisStore } from "@nudo/data/redis";
 import { deleteCart, ensureCartId, getCart, getCartId, getSkuInfo, saveCart } from "../cart";
 
 export type CartActionResult =
@@ -16,6 +17,9 @@ const MAX_QTY = 99;
 type CartLine = Cart["lines"][number];
 
 async function persist(cartId: string, lines: CartLine[]): Promise<CartActionResult> {
+  // R38: las Server Actions son endpoints públicos — rate limit por cartId.
+  const rate = await getRedisStore().rateLimit("cartMutation", cartId);
+  if (!rate.allowed) return { ok: false, error: "rate-limited" };
   if (lines.length === 0) {
     await deleteCart(cartId);
     return { ok: true, count: 0 };

@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-11-19T13:59:55.633Z",
+  "base": "http://localhost:3100",
+  "sharedTotal": 186957,
+  "routes": {
+    "home": {
+      "url": "/es",
+      "firstLoadJsGzip": 190224,
+      "firstLoadJsRaw": 611874,
+      "ownJsGzip": 3267,
+      "chunks": 11
+    },
+    "plp": {
+      "url": "/es/c/tops",
+      "firstLoadJsGzip": 190224,
+      "firstLoadJsRaw": 611874,
+      "ownJsGzip": 3267,
+      "chunks": 11
+    },
+    "pdp": {
+      "url": "/es/p/buzo-neon-tecnica-049",
+      "firstLoadJsGzip": 188763,
+      "firstLoadJsRaw": 607915,
+      "ownJsGzip": 1806,
+      "chunks": 11
+    },
+    "search": {
+      "url": "/es/search?q=remera",
+      "firstLoadJsGzip": 190224,
+      "firstLoadJsRaw": 611874,
+      "ownJsGzip": 3267,
+      "chunks": 11
+    },
+    "cart": {
+      "url": "/es/cart",
+      "firstLoadJsGzip": 187479,
+      "firstLoadJsRaw": 604205,
+      "ownJsGzip": 522,
+      "chunks": 11
+    }
+  }
+}

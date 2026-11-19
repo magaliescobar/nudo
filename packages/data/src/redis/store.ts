@@ -4,7 +4,15 @@ import { randomUUID } from "node:crypto";
 import type { Cart, CheckoutSession } from "@nudo/commerce/catalog";
 import type { createClient } from "redis";
 import { CircuitBreaker } from "./breaker";
-import { invalidationChannel, keys, type RateLimitBucket, rateLimits, ttlSeconds } from "./keys";
+import {
+  invalidationChannel,
+  keys,
+  type RateLimitBucket,
+  rateLimits,
+  ttlSeconds,
+  vitalsMaxSamples,
+  vitalsTtlSeconds,
+} from "./keys";
 
 export type RedisClient = ReturnType<typeof createClient>;
 
@@ -130,6 +138,21 @@ export function createRedisStore(client: RedisClient, options: RedisStoreOptions
       if (!result.ok) return { allowed: onRedisDown === "allow", degraded: true, remaining: 0 };
       const count = Number(result.value[0]);
       return { allowed: count <= limit, degraded: false, remaining: Math.max(0, limit - count) };
+    },
+
+    // 4b · Muestras RUM de Web Vitals (R35): lista acotada con TTL
+    vitals: {
+      push: (sample: string) =>
+        run("vitals.push", () =>
+          client
+            .multi()
+            .lPush(keys.vitals(), sample)
+            .lTrim(keys.vitals(), 0, vitalsMaxSamples - 1)
+            .expire(keys.vitals(), vitalsTtlSeconds)
+            .exec(),
+        ),
+      list: (max = vitalsMaxSamples) =>
+        run("vitals.list", () => client.lRange(keys.vitals(), 0, max - 1)),
     },
 
     // 5 · Invalidación entre instancias de cachés L1

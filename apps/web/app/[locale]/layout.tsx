@@ -11,6 +11,7 @@ import { siteUrl } from "../../lib/seo";
 import { JsonLd, organizationJsonLd, webSiteJsonLd } from "../../lib/jsonld";
 import "../globals.scss";
 import { CartDrawer } from "./_components/CartDrawer";
+import { WebVitals } from "./_components/WebVitals";
 
 // Archivo variable (peso + ancho) como en el catálogo; next/font genera el fallback métrico (R36).
 const archivo = Archivo({
@@ -79,6 +80,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           cartBadge={<CartDrawer locale={locale} />}
         />
         <main id="contenido">{children}</main>
+        <WebVitals />
         <Footer
           siteName={t.meta.siteName}
           tagline={t.footer.tagline}

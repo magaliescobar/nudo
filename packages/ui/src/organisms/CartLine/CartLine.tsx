@@ -9,6 +9,7 @@ import { formatPrice } from "@nudo/i18n/format";
 import { Badge } from "../../atoms/Badge/Badge";
 import { Button } from "../../atoms/Button/Button";
 import { QuantityStepper } from "../../molecules/QuantityStepper/QuantityStepper";
+import { blurDataURLFromHex } from "../../utils/placeholder";
 import styles from "./CartLine.module.scss";
 
 type CartLineProps = {
@@ -44,6 +45,8 @@ export function CartLine({ line, locale, labels, updateAction, removeAction }: C
             width={info.image.width}
             height={info.image.height}
             sizes="96px"
+            placeholder="blur"
+            blurDataURL={blurDataURLFromHex(info.colorHex)}
           />
         ) : (
           <span className={styles.noImage} aria-hidden="true" />

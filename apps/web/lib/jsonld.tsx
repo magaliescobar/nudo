@@ -126,5 +126,3 @@ export function productGroupJsonLd(
     hasVariant: variants,
   };
 }
-
-

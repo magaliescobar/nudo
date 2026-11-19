@@ -2,6 +2,7 @@
 // los thumbs son links ?img=n (funciona sin JS) y con JS la galería es una
 // isla cliente (ProductGalleryClient) para crossfade sin reload.
 import Image from "next/image";
+import { blurDataURLFromHex } from "../../utils/placeholder";
 import Link from "next/link";
 import styles from "./ProductGallery.module.scss";
 
@@ -10,6 +11,8 @@ export type GalleryImage = {
   readonly alt: string;
   readonly width: number;
   readonly height: number;
+  /** Hex del color de la variante → placeholder (R36). */
+  readonly blurHex?: string;
 };
 
 type ProductGalleryProps = {
@@ -36,6 +39,8 @@ export function ProductGallery({ images, activeIndex, hrefFor, labels }: Product
           height={active.height}
           sizes="(min-width: 60rem) 45vw, 100vw"
           priority
+          placeholder="blur"
+          blurDataURL={blurDataURLFromHex(active.blurHex ?? "#E9E4D8")}
         />
       </div>
       {images.length > 1 && (
