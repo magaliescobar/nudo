@@ -25,6 +25,7 @@ type VariantPickerProps = {
     soldOut: string;
     currentPrice: string;
     previousPrice: string;
+    sku: string;
   };
   imagePriority?: boolean;
   /** Identidad del elemento compartido PLP→PDP (R23). Único por página renderizada. */
@@ -47,6 +48,7 @@ export function VariantPicker({
   const active = variants.find((v) => v.id === activeId) ?? initial;
   const image = active?.image;
   const name = product.name[locale];
+  const sku = active?.sku;
 
   const options: SwatchOption[] = variants.map((variant) => ({
     id: variant.id,
@@ -87,6 +89,11 @@ export function VariantPicker({
         onPreview={setPreviewId}
         labels={{ soldOut: labels.soldOut, chooseColor: labels.chooseColor }}
       />
+      {sku ? (
+        <p className={styles.sku}>
+          {labels.sku}: {sku}
+        </p>
+      ) : null}
       <div className={styles.priceWrap}>
         <p className={styles.price} data-price>
           {active?.minPrice ? (

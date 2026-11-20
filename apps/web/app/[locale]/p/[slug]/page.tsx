@@ -195,6 +195,7 @@ export default async function PdpPage({ params, searchParams }: Props) {
               soldOut: t.catalog.badges.soldOut,
               currentPrice: t.pdp.chooseOptions,
               previousPrice: t.pdp.chooseOptions,
+              sku: t.pdp.sku,
             }}
           />
         </section>

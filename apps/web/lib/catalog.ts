@@ -91,7 +91,17 @@ export const findRedirect = cache((from: string) => measure("catalog", () => loa
 
 const getStockByKey = cache((skuList: string) => measure("catalog", () => loadStock(skuList)));
 
+/** Límite prudencial por entrada: `cacheTag()` descarta tags por encima del máximo. */
+const STOCK_SKU_BATCH = 64;
+
 /** Clave canónica (SKUs ordenados y únicos) para que el mismo conjunto comparta entrada. */
-export function getStock(skus: readonly string[]) {
-  return getStockByKey([...new Set(skus)].sort().join(","));
+export async function getStock(skus: readonly string[]) {
+  const unique = [...new Set(skus)].sort();
+  if (unique.length <= STOCK_SKU_BATCH) return getStockByKey(unique.join(","));
+  const parts = await Promise.all(
+    Array.from({ length: Math.ceil(unique.length / STOCK_SKU_BATCH) }, (_, i) =>
+      getStockByKey(unique.slice(i * STOCK_SKU_BATCH, (i + 1) * STOCK_SKU_BATCH).join(",")),
+    ),
+  );
+  return Object.assign({}, ...parts) as Record<string, number>;
 }

@@ -36,6 +36,7 @@ const cardLabels = (t: Dictionary) => ({
   soldOut: t.catalog.badges.soldOut,
   currentPrice: t.pdp.chooseOptions,
   previousPrice: t.pdp.chooseOptions,
+  sku: t.pdp.sku,
   new: t.catalog.badges.new,
   sale: t.catalog.badges.sale,
   lastUnits: t.catalog.badges.lastUnits,
