@@ -21,6 +21,13 @@
   background: token("color-skeleton");
 }
 
+.sku {
+  margin: 0;
+  padding: 0 token("space-sm");
+  font-size: token("text-xs");
+  color: token("color-text-muted");
+}
+
 .priceWrap {
   padding: token("space-xs") token("space-sm") token("space-sm");
 }

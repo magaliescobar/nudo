@@ -13,6 +13,7 @@ export type CardImage = {
 
 export type CardVariant = {
   readonly id: string;
+  readonly sku: string;
   readonly colorName: Localized<string>;
   readonly colorHex: string;
   readonly image?: CardImage;
@@ -45,6 +46,7 @@ export function toCardProduct(
     const prices = variant.skus.map((sku) => sku.price.amountInCents);
     return {
       id: variant.id,
+      sku: variant.skus[0]?.sku ?? "",
       colorName: variant.color.name,
       colorHex: variant.color.hex,
       image: variant.images[0]

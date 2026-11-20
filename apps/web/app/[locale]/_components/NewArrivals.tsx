@@ -29,6 +29,7 @@ export async function NewArrivals({ locale, t }: { locale: Locale; t: Dictionary
           soldOut: t.catalog.badges.soldOut,
           currentPrice: t.pdp.chooseOptions,
           previousPrice: t.pdp.chooseOptions,
+          sku: t.pdp.sku,
           new: t.catalog.badges.new,
           sale: t.catalog.badges.sale,
         }}

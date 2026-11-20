@@ -15,6 +15,7 @@ type ProductGridProps = {
     soldOut: string;
     currentPrice: string;
     previousPrice: string;
+    sku: string;
     new?: string;
     sale?: string;
     lastUnits?: string;
